@@ -66,12 +66,13 @@ def createAW(String version) {
     if (!awsFolder.exists() && !awsFolder.mkdirs()) {
         return
     }
-    def file = file("src/main/resources/aws/${version}.accesswidener")
-    if (file.exists()) {
+    def awFile = file("src/main/resources/aws/${version}.accesswidener")
+    if (awFile.exists() || !awFile.createNewFile()) {
         return
     }
-    file.createNewFile()
-    def writer = new FileWriter(file)
+
+    awFile.createNewFile()
+    def writer = new FileWriter(awFile)
     writer.write("accessWidener v2 named\n")
     writer.write("# ${version} AW\n")
     writer.close()
@@ -83,11 +84,10 @@ def createMixin(String version) {
     if (!mixinsFolder.exists() && !mixinsFolder.mkdirs()) {
         return
     }
-    def file = file("src/main/resources/mixins/${version}-${mod_id}.mixins.json5")
-    if (file.exists()) {
+    def mixinsFile = file("src/main/resources/mixins/${version}-${mod_id}.mixins.json5")
+    if (mixinsFile.exists() || !mixinsFile.createNewFile()) {
         return
     }
-    file.createNewFile()
 
     def mixinContent = [
             required: true,
@@ -101,19 +101,21 @@ def createMixin(String version) {
             ]
     ]
 
-    file.text = new JsonBuilder(mixinContent).toPrettyString()
+    mixinsFile.text = new JsonBuilder(mixinContent).toPrettyString()
     println "Successfully created Mixin for ${version}"
 }
 
 def createGradleProperties(String version, ArrayList<String> additionalDepends) {
-    def file = file("/versions/${version}/gradle.properties")
-    if (file.exists()) {
+    def folderFile = file("/versions/${version}")
+    if (!folderFile.exists() && !folderFile.mkdirs()) {
+        return
+    }
+    def gradleProperties = file("/versions/${version}/gradle.properties")
+    if (gradleProperties.exists() || !gradleProperties.createNewFile()) {
         return
     }
 
-    file.createNewFile()
-
-    def writer = new FileWriter(file)
+    def writer = new FileWriter(gradleProperties)
     writer.write("# Versioned Properties\n")
     writer.write("\n")
     writer.write("# Java Properties\n")
