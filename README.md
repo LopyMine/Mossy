@@ -1,4 +1,4 @@
-<img src="src/main/resources/icon/icon.png" align="right" width="190px"/>
+<img src="src/main/resources/icon/icon.png" align="right" width="190px" alt="mod logo"/>
 
 ### Mossy - Template Fabric Mod
 
@@ -16,18 +16,18 @@ Mossy is a template Fabric mod with some additional tweaks and code templates.
 5) Mod Config template
 6) Versioned AWs and Mixins
 7) Fast `gradle.properties`, AWs and mixins generation for each version (for 1st point)
-8) Splitted run folder for `runs/client` and `runs/server`
+8) Split run folder for `runs/client` and `runs/server`
 ### Planned
 9) Add support for multi-loaders
 
-# How to setup it
+# How to set up it
 Basically, there are two ways: 
 1) You can fork this template mod and make your mod
 2) You can integrate Mossy build system into your ready-made mod
 
 But we will focus on the second way. In this way you will need to copy files `stonecutter.gradle`, `settings.gradle`, `gradle.properties`, `build.gradle`, `LICENSE`, `Mossy/src/main/resources/fabric.mod.json` and optional `.gitignore`. 
 
-Then you will need to setup `gradle.properties`.
+Then you will need to set up `gradle.properties`.
 
 ## About `gradle.properties`
 - `Mod Properties` contains mod info
@@ -50,9 +50,11 @@ dep.MOD_ID=MOD_VERSION
 
 After you can reload gradle and check all updates.
 
+Also don't forgot to add your dependency in `build.gradle` with this value
+
 ## About Mixins and AWs
 
-After reloading gradle, in your `resources` folder you will find `mixins` and `aws` folders. In them you will find generated mixins and AWs for each minecraft version. What version they are for is indicated in their name.
+After reloading gradle, in your `resources` folder you will find `mixins` and `aws` folders. In them, you will find generated mixins and AWs for each minecraft version. What version they are for is indicated in their name.
 
 You might be surprised that all mixins have a `.json5` extension instead of `.json`. This is needed to support comments which are needed for the [Stonecutter](https://stonecutter.kikugie.dev/) plugin. In build all mixins will be converted to `.json` by [j52j](https://github.com/kikugie/j52j).
 
@@ -81,7 +83,7 @@ In Mossy, `fabric.mod.json` has some features you should know, here are the main
 
 ## About `player/player.properties`
 
-`Mossy/player/player.properties` is just a properties file, which uses to setup minecraft runs config with properties, to setup your nickname and uuid if they are present. If you wanna to add it, just create `player` folder in your project, and file `player.properties` with this content:
+`Mossy/player/player.properties` is just a properties file, which uses to set up minecraft runs config with properties, to set up your nickname and uuid if they are present. If you want to add it, just create `player` folder in your project, and file `player.properties` with this content:
 
 ```properties
 # Player properties
@@ -102,18 +104,36 @@ After settings and reloading gradle, you should have gradle tasks in the `stonec
 - `Refresh active project` will refresh project and update comments.
 - `Reset active project` will switch current minecraft version to first of the `multi_versions` in main `gradle.properties` file.
 
+You can check current minecraft version in `stonecutter.gradle` file.
 For more info check the [Stonecutter docs](https://stonecutter.kikugie.dev/stonecutter/introduction).
 
-*gif gere*
+<details>
+<summary>Showcase</summary>
+<br>
+<img src="img/switching_version.gif" width="400" alt="Showcase"/>
+</details>
 
 ## Launching current minecraft version
-To run current minecraft version with your mod you will need to run run configuration with the same version.
+To run current minecraft version with your mod you will need to execute run configuration with the same version, that in `stonecutter.gradle`, to switch it, read previous text above.
 
-*gif gere*
+Also, your game folder is now split to `Mossy/runs/client` and `Mossy/runs/server`, boop.
 
-Also your game folder is now splitted to `Mossy/runs/client` and `Mossy/runs/server`, boop.
+<details>
+<summary>Showcase</summary>
+<br>
+<img src="img/launching_minecraft.gif" width="600" alt="Showcase"/>
+<img src="img/launched_mod.png" width="600" alt="Showcase"/>
+</details>
 
 ## Building mod
 To build your mod you can just start specified gradle task `chiseledBuild` in `project` group, after execution you can go to `Mossy/versions/[MINECRAFT VERSION]/build/libs/your_builded_mod.jar`.
 
-*gif gere*
+<details>
+<summary>Showcase</summary>
+<br>
+<img src="img/building_mod.gif"  width="400" alt="Showcase"/>
+
+And after executing `chiseledBuild` task you can check your mods, here is example for minecraft 1.20.1:
+
+<img src="img/mod.png" width="500" alt="Showcase"/>
+</details>
