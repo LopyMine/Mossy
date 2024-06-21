@@ -126,7 +126,7 @@ Also, your game folder is now split to `Mossy/runs/client` and `Mossy/runs/serve
 </details>
 
 ## Building mod
-To build your mod you can just start specified gradle task `chiseledBuild` in `project` group, after execution you can go to `Mossy/versions/[MINECRAFT VERSION]/build/libs/your_builded_mod.jar`.
+To build your mod for each minecraft version which you write in main `gradle.properties`, you can just start specified gradle task `chiseledBuild` in `project` group, after execution you can go to `Mossy/versions/[MINECRAFT VERSION]/build/libs/your_builded_mod.jar`.
 
 <details>
 <summary>Showcase</summary>
