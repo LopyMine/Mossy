@@ -7,12 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Mossy implements ModInitializer {
-	public static String MOD_ID = "mossy";
-    public static final Logger LOGGER = LoggerFactory.getLogger("mossy");
+	public static final String MOD_NAME = /*$ mod_name*/ "Mossy";
+	public static final String MOD_ID = /*$ mod_id*/ "mossy";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Mossy Initialized");
+		LOGGER.info("{} Initialized", MOD_NAME);
 	}
 
 	public static Identifier id(String path) {

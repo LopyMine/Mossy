@@ -8,6 +8,10 @@ def modName = project.mod_name
 def modVersion = project.mod_version
 def modMavenGroup = project.mod_group
 
+def modDescription = project.mod_description
+def modAuthors = project.mod_authors
+def modLicense = project.mod_authors
+
 def minecraftVersion = stonecutter.current.version.toString() // Current MC version from "./versions/" folder
 def lombokVersion = project.lombok_version
 def fabricLoader = findProperty("build.fabric_loader")
@@ -98,7 +102,10 @@ loom {
 
 processResources {
     def props = [:]
-    props.put("modId", modId.toString())
+    props.put("mod_id", modId.toString())
+	props.put("mod_authors", modAuthors.toString())
+	props.put("mod_description", modDescription.toString())
+	props.put("mod_license", modLicense .toString())
     props.put("version", version.toString())
     props.put("fabric_loader", fabricLoader.toString())
     props.put("minecraft", minecraftVersion.toString())
@@ -124,6 +131,12 @@ processResources {
             it.exclude()
         }
     }
+}
+
+stonecutter {
+	swap("mod_version", "\"${findProperty("mod_version")}\";")
+	swap("mod_id", "\"${findProperty("mod_id")}\";")
+	swap("mod_name", "\"${findProperty("mod_name")}\";")
 }
 
 tasks.withType(JavaCompile).configureEach {

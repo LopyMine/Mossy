@@ -1,17 +1,17 @@
 {
     "schemaVersion": 1,
-    "id": "mossy",
+    "id": "${mod_id}",
     "version": "${version}",
-    "name": "Mossy",
-    "description": "Template Fabric mod with some additional tweaks for my projects",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
     "authors": [
-        "LopyMine"
+        "${mod_authors}"
     ],
     "contact": {
-        "homepage": "https://modrinth.com/mod/mossy",
-        "issues": "https://github.com/LopyMine/mossy"
+        "homepage": "https://modrinth.com/mod/${mod_id}",
+        "issues": "https://github.com/LopyMine/${mod_id}"
     },
-    "license": "MIT",
+    "license": "${mod_license}",
     "icon": "icon/icon.png",
     "environment": "*",
     "entrypoints": {
