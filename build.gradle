@@ -10,7 +10,7 @@ def modMavenGroup = project.mod_group
 
 def modDescription = project.mod_description
 def modAuthors = project.mod_authors
-def modLicense = project.mod_authors
+def modLicense = project.mod_license
 
 def minecraftVersion = stonecutter.current.version.toString() // Current MC version from "./versions/" folder
 def lombokVersion = project.lombok_version
@@ -105,6 +105,7 @@ processResources {
     props.put("mod_id", modId.toString())
 	props.put("mod_authors", modAuthors.toString())
 	props.put("mod_description", modDescription.toString())
+	props.put("mod_name", modName.toString())
 	props.put("mod_license", modLicense .toString())
     props.put("version", version.toString())
     props.put("fabric_loader", fabricLoader.toString())
