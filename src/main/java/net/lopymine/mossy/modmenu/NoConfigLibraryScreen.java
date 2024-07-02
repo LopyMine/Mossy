@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 import net.lopymine.mossy.client.MossyClient;
+import net.lopymine.mossy.utils.ModMenuUtils;
 
 import java.net.*;
 import java.util.*;
@@ -20,14 +21,13 @@ public class NoConfigLibraryScreen {
 		throw new IllegalStateException("Screen class, use createScreen(...) method!");
 	}
 
-	private static final Text TITLE = Text.translatable("mossy.modmenu.title");
 	private static final Text MESSAGE = Text.translatable("mossy.modmenu.no_config_library_screen.message");
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
 	private static final String YACL_MODRINTH_LINK = "https://modrinth.com/mod/yacl/versions?l=fabric&g=";
 
 	@Contract("_ -> new")
 	public static @NotNull Screen createScreen(Screen parent) {
-		return new ConfirmScreen((open) -> NoConfigLibraryScreen.onConfirm(open, parent), NoConfigLibraryScreen.TITLE, NoConfigLibraryScreen.MESSAGE, ScreenTexts.CONTINUE, ScreenTexts.BACK);
+		return new ConfirmScreen((open) -> NoConfigLibraryScreen.onConfirm(open, parent), ModMenuUtils.getModTitle(), NoConfigLibraryScreen.MESSAGE, ScreenTexts.CONTINUE, ScreenTexts.BACK);
 	}
 
 	private static void onConfirm(boolean open, Screen parent) {

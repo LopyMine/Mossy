@@ -22,21 +22,38 @@ public class YACLConfigurationScreen {
 		MossyConfig defConfig = new MossyConfig();
 		MossyConfig config = MossyClient.getConfig();
 
-		return YetAnotherConfigLib.createBuilder()
-				.title(Text.translatable("mossy.modmenu.title"))
-				.category(ConfigCategory.createBuilder()
-						.name(Text.translatable("mossy.modmenu.title"))
-						.group(getMossyGroup(defConfig, config))
-						.build())
-				.save(config::save)
-				.build()
-				.generateScreen(parent);
+		return SimpleYACLScreenBuilder.startBuilder(parent, config::save)
+				.categories(
+						getGeneralCategory(defConfig, config),
+						SimpleCollector.getIf(
+								getSecretCategory(defConfig, config),
+								config::isMossy
+						))
+				.build();
+	}
+
+	private static ConfigCategory getSecretCategory(MossyConfig defConfig, MossyConfig config) {
+		return SimpleCategoryBuilder.startBuilder("secret_category")
+				.groups(getSecretGroup(defConfig, config))
+				.build();
+	}
+
+	private static ConfigCategory getGeneralCategory(MossyConfig defConfig, MossyConfig config) {
+		return SimpleCategoryBuilder.startBuilder("general")
+				.groups(getMossyGroup(defConfig, config))
+				.build();
+	}
+
+	private static OptionGroup getSecretGroup(MossyConfig defConfig, MossyConfig config) {
+		return SimpleGroupBuilder.createBuilder("secret_group").options(
+				SimpleOptionBuilder.getFloatOptionAsSlider("secret_option", -180.0F, 180.0F, 1.0F, defConfig.getSecret(), config::getSecret, config::setSecret).build()
+		).build();
 	}
 
 	private static OptionGroup getMossyGroup(MossyConfig defConfig, MossyConfig config) {
-		return SimpleGroupOptionBuilder.createBuilder("mossy_group").options(collector -> collector.collect(
-				collector.getBooleanOption("mossy_option", defConfig.isMossy(), config::isMossy, config::setMossy, ENABLED_OR_DISABLE_FORMATTER::apply, SimpleContent.IMAGE)
-		)).build();
+		return SimpleGroupBuilder.createBuilder("mossy_group").options(
+				SimpleOptionBuilder.getBooleanOption("mossy_option", defConfig.isMossy(), config::isMossy, config::setMossy, ENABLED_OR_DISABLE_FORMATTER::apply, SimpleContent.IMAGE).build()
+		).build();
 	}
 }
 

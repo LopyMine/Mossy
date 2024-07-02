@@ -21,20 +21,24 @@ import org.jetbrains.annotations.NotNull;
 @Setter
 public class MossyConfig {
 	public static final Codec<MossyConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.BOOL.fieldOf("mossy").forGetter(MossyConfig::isMossy)
+			Codec.BOOL.fieldOf("mossy").forGetter(MossyConfig::isMossy),
+			Codec.FLOAT.fieldOf("secret").forGetter(MossyConfig::getSecret)
 	).apply(instance, MossyConfig::new));
 
 	private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(Mossy.MOD_ID + ".json5").toFile();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final Logger LOGGER = LoggerFactory.getLogger(Mossy.MOD_NAME + "/Config");
 	private boolean mossy;
+	private float secret;
 
 	public MossyConfig() {
-		this.mossy = true;
+		this.mossy = false;
+		this.secret = 0.0F;
 	}
 
-	public MossyConfig(boolean mossy) {
+	public MossyConfig(boolean mossy, float secret) {
 		this.mossy = mossy;
+		this.secret = secret;
 	}
 
 	public static MossyConfig getInstance() {
