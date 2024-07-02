@@ -55,6 +55,7 @@ public class YACLConfigurationScreen {
 				SimpleOptionBuilder.getBooleanOption("mossy_option", defConfig.isMossy(), config::isMossy, config::setMossy, ENABLED_OR_DISABLE_FORMATTER::apply, SimpleContent.IMAGE).build()
 		).build();
 	}
+
 }
 
 
