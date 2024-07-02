@@ -18,12 +18,12 @@ public class ModMenuUtils {
 		return String.format("%s.modmenu.option.%s", Mossy.MOD_ID, optionId);
 	}
 
-	public static String getCategoryKey(String optionId) {
-		return String.format("%s.modmenu.category.%s", Mossy.MOD_ID, optionId);
+	public static String getCategoryKey(String categoryId) {
+		return String.format("%s.modmenu.category.%s", Mossy.MOD_ID, categoryId);
 	}
 
-	public static String getGroupKey(String optionId) {
-		return String.format("%s.modmenu.group.%s", Mossy.MOD_ID, optionId);
+	public static String getGroupKey(String groupId) {
+		return String.format("%s.modmenu.group.%s", Mossy.MOD_ID, groupId);
 	}
 
 	public static Text getName(String key) {

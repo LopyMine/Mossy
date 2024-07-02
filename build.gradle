@@ -76,7 +76,7 @@ loom {
         defaultRefmapName.set("${modId}.refmap.json")
     }
 
-    def accessWidenerFile = project.rootProject.file("src/main/resources/aws/${minecraftVersion}-${modId}.accesswidener")
+    def accessWidenerFile = project.rootProject.file("src/main/resources/aws/${minecraftVersion}.accesswidener")
     if (accessWidenerFile.exists())  {
         accessWidenerPath = accessWidenerFile
     }
