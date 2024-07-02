@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 
 import net.lopymine.mossy.utils.ModMenuUtils;
 
-import java.util.function.*;
+import java.util.function.Consumer;
 
 public class SimpleYACLScreenBuilder {
 

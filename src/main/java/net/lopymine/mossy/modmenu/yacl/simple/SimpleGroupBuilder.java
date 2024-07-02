@@ -7,6 +7,7 @@ import net.minecraft.text.Text;
 import net.lopymine.mossy.utils.ModMenuUtils;
 
 public class SimpleGroupBuilder {
+
 	private final Builder groupBuilder;
 
 	public SimpleGroupBuilder(String groupId) {

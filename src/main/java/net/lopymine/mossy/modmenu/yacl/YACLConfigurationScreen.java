@@ -7,12 +7,13 @@ import net.minecraft.text.Text;
 import net.lopymine.mossy.client.MossyClient;
 import net.lopymine.mossy.config.MossyConfig;
 import net.lopymine.mossy.modmenu.yacl.simple.*;
+import net.lopymine.mossy.utils.ModMenuUtils;
 
 import java.util.function.Function;
 
 public class YACLConfigurationScreen {
 
-	private static final Function<Boolean, Text> ENABLED_OR_DISABLE_FORMATTER = state -> Text.translatable("mossy.modmenu.formatter.enable_or_disable." + state);
+	private static final Function<Boolean, Text> ENABLED_OR_DISABLE_FORMATTER = ModMenuUtils.getEnabledOrDisabledFormatter();
 
 	private YACLConfigurationScreen() {
 		throw new IllegalStateException("Screen class");

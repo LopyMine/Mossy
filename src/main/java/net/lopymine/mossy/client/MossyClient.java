@@ -10,6 +10,7 @@ import net.lopymine.mossy.config.MossyConfig;
 
 
 public class MossyClient implements ClientModInitializer {
+
 	public static Logger LOGGER = LoggerFactory.getLogger(Mossy.MOD_NAME + "/Client");
 
 	@Setter

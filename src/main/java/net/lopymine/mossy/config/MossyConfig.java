@@ -6,7 +6,6 @@ import org.slf4j.*;
 
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.lopymine.mossy.Mossy;
@@ -20,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @Setter
 public class MossyConfig {
+
 	public static final Codec<MossyConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.BOOL.fieldOf("mossy").forGetter(MossyConfig::isMossy),
 			Codec.FLOAT.fieldOf("secret").forGetter(MossyConfig::getSecret)
@@ -32,12 +32,12 @@ public class MossyConfig {
 	private float secret;
 
 	public MossyConfig() {
-		this.mossy = false;
+		this.mossy  = false;
 		this.secret = 0.0F;
 	}
 
 	public MossyConfig(boolean mossy, float secret) {
-		this.mossy = mossy;
+		this.mossy  = mossy;
 		this.secret = secret;
 	}
 

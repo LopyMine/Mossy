@@ -13,7 +13,7 @@ public enum SimpleContent {
 	private final String fileExtension;
 
 	SimpleContent(String folder, String fileExtension) {
-		this.folder = folder;
+		this.folder        = folder;
 		this.fileExtension = fileExtension;
 	}
 }

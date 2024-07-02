@@ -6,6 +6,8 @@ import net.minecraft.util.Identifier;
 import net.lopymine.mossy.Mossy;
 import net.lopymine.mossy.modmenu.yacl.simple.SimpleContent;
 
+import java.util.function.Function;
+
 public class ModMenuUtils {
 
 	private ModMenuUtils() {
@@ -37,6 +39,14 @@ public class ModMenuUtils {
 	}
 
 	public static Text getModTitle() {
-		return Text.translatable(String.format("%s.modmenu.title", Mossy.MOD_ID));
+		return Mossy.text("modmenu.title");
+	}
+
+	public static Function<Boolean, Text> getEnabledOrDisabledFormatter() {
+		return state -> Mossy.text("modmenu.formatter.enabled_of_disabled." + state);
+	}
+
+	public static Text getNoConfigScreenMessage() {
+		return Mossy.text("modmenu.no_config_library_screen.message");
 	}
 }
