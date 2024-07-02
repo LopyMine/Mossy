@@ -19,6 +19,6 @@
 	"mossy.modmenu.option.mossy_option.name": "Пушистая опция",
 	"mossy.modmenu.option.mossy_option.description": "Пример пушистого описания опции.",
 
-	"mossy.modmenu.formatter.enable_or_disable.true": "Включено",
-	"mossy.modmenu.formatter.enable_or_disable.false": "Отключено"
+	"mossy.modmenu.formatter.enabled_or_disabled.true": "Включено",
+	"mossy.modmenu.formatter.enabled_or_disabled.false": "Отключено"
 }

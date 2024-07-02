@@ -19,6 +19,6 @@
 	"mossy.modmenu.option.mossy_option.name": "Mossy Option",
 	"mossy.modmenu.option.mossy_option.description": "Example Mossy Option Description.",
 
-	"mossy.modmenu.formatter.enable_or_disable.true": "Enabled",
-	"mossy.modmenu.formatter.enable_or_disable.false": "Disabled"
+	"mossy.modmenu.formatter.enabled_or_disabled.true": "Enabled",
+	"mossy.modmenu.formatter.enabled_or_disabled.false": "Disabled"
 }

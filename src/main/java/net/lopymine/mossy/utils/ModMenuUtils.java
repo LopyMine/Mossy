@@ -43,7 +43,7 @@ public class ModMenuUtils {
 	}
 
 	public static Function<Boolean, Text> getEnabledOrDisabledFormatter() {
-		return state -> Mossy.text("modmenu.formatter.enabled_of_disabled." + state);
+		return state -> Mossy.text("modmenu.formatter.enabled_or_disabled." + state);
 	}
 
 	public static Text getNoConfigScreenMessage() {
