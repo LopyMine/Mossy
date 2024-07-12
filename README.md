@@ -12,7 +12,7 @@ Mossy is a template Fabric mod with some additional tweaks and code templates.
 ---
 ### Done
 1) Multi-version modding by [Stonecutter](https://stonecutter.kikugie.dev/) plugin
-2) Easy player setting (uuid and nickname)
+2) Easy player setting (uuid and nickname) 
 3) Mod Menu Integration
 4) Fast YACL configuration for config screen (WIP)
 5) Mod Config template
