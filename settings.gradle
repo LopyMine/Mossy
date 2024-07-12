@@ -47,7 +47,7 @@ if (additionalDepends.isEmpty()) {
 stonecutter {
     shared {
         versions(multiVersions)
-        vcsVersion = multiVersions.first()
+        vcsVersion = multiVersions.last()
     }
 
     create(rootProject)
