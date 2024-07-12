@@ -1,5 +1,7 @@
 <img src="src/main/resources/icon/icon.png" align="right" width="190px" alt="mod logo"/>
 
+[![Discord link to the "LopyMine's Project" discrod server](img/discord_banner.png)](https://discord.gg/NZzxdkrV4s)
+
 ### Mossy - Template Fabric Mod
 
 ---

@@ -47,13 +47,21 @@ public class YACLConfigurationScreen {
 
 	private static OptionGroup getSecretGroup(MossyConfig defConfig, MossyConfig config) {
 		return SimpleGroupBuilder.createBuilder("secret_group").options(
-				SimpleOptionBuilder.getFloatOptionAsSlider("secret_option", -180.0F, 180.0F, 1.0F, defConfig.getSecret(), config::getSecret, config::setSecret).build()
+				SimpleOptionBuilder.getFloatOptionAsSlider(
+						"secret_option",
+						-180.0F, 180.0F, 1.0F,
+						defConfig.getSecret(), config::getSecret, config::setSecret
+				).build()
 		).build();
 	}
 
 	private static OptionGroup getMossyGroup(MossyConfig defConfig, MossyConfig config) {
 		return SimpleGroupBuilder.createBuilder("mossy_group").options(
-				SimpleOptionBuilder.getBooleanOption("mossy_option", defConfig.isMossy(), config::isMossy, config::setMossy, ENABLED_OR_DISABLE_FORMATTER::apply, SimpleContent.IMAGE).build()
+				SimpleOptionBuilder.getBooleanOption(
+						"mossy_option",
+						defConfig.isMossy(), config::isMossy, config::setMossy,
+						ENABLED_OR_DISABLE_FORMATTER::apply, SimpleContent.IMAGE
+				).build()
 		).build();
 	}
 
