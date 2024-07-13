@@ -21,7 +21,7 @@ pluginManagement {
 }
 
 plugins {
-    id "dev.kikugie.stonecutter" version "0.4"
+    id "dev.kikugie.stonecutter" version "0.4.2"
 }
 
 def multiVersions = multi_versions.split(" ")
@@ -118,9 +118,6 @@ def createGradleProperties(String version, ArrayList<String> additionalDepends) 
     def writer = new FileWriter(gradleProperties)
     writer.write("# Versioned Properties\n")
     writer.write("\n")
-    writer.write("# Java Properties\n")
-    writer.write("build.java=${getJavaVersion(version)}\n")
-    writer.write("\n")
     writer.write("# Fabric Properties, check https://fabricmc.net/develop/\n")
     writer.write("build.yarn=${getYarnVersion(version)}\n")
     writer.write("build.fabric_loader=${getFabricLoaderVersion(version)}\n")
@@ -167,15 +164,5 @@ static String getDependVersion(String modId, String minecraftVersion) {
     }
 
     return result["version_number"].toString()
-}
-
-static String getJavaVersion(String version) {
-    if (version == "1.20.6") {
-        return "21"
-    }
-    if (version == "1.20.5") {
-        return "21"
-    }
-    return "17"
 }
 
