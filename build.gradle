@@ -1,6 +1,7 @@
 plugins {
 	id "fabric-loom" version "1.6-SNAPSHOT"
 	id "dev.kikugie.j52j" version "1.0.2"
+	id "me.modmuss50.mod-publish-plugin" version "0.5.+"
 }
 
 def modId = project.mod_id
@@ -16,7 +17,9 @@ def minecraftVersion = stonecutter.current.version.toString() // Current MC vers
 def lombokVersion = project.lombok_version
 def fabricLoader = findProperty("build.fabric_loader")
 
-def javaVersion = getJavaVersion(minecraftVersion)
+def javaVersionAsInt = getJavaVersionAsInteger(minecraftVersion)
+def javaVersion = JavaVersion.toVersion(javaVersionAsInt)
+println "Using ${javaVersion.toString()} Java"
 def fabricAPI = findProperty("build.fabric_api")
 
 version = "${modVersion}+${stonecutter.current.version}"
@@ -121,8 +124,9 @@ processResources {
 	props.put("version", version.toString())
 	props.put("fabric_loader", fabricLoader.toString())
 	props.put("minecraft", minecraftVersion.toString())
-	props.put("java", javaVersion.toString())
+	props.put("java", javaVersionAsInt.toString())
 	props.put("fabric_api", fabricAPI.toString())
+	props.put("fabric_api_id", stonecutter.compare("1.19.1", minecraftVersion) >= 0 ? "fabric" : "fabric-api")
 
 	props.each { key, value ->
 		inputs.property key, value
@@ -156,7 +160,7 @@ stonecutter {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = (javaVersion as int)
+	it.options.release = (javaVersionAsInt as int)
 }
 
 tasks.register('buildAndCollect', Copy) {
@@ -172,20 +176,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	def java = javaVersion as int
-	//21 17 16 8
-	def ver = JavaVersion.VERSION_1_8
-	if (java == 16) {
-		ver = JavaVersion.VERSION_16
-	}
-	if (java == 17) {
-		ver = JavaVersion.VERSION_17
-	}
-	if (java == 21) {
-		ver = JavaVersion.VERSION_21
-	}
-	sourceCompatibility = ver
-	targetCompatibility = ver
+	sourceCompatibility = javaVersion
+	targetCompatibility = javaVersion
 }
 
 jar {
@@ -222,7 +214,7 @@ UUID getUUID(String uuid, boolean undashed) {
 }
 
 // Cannot be static!
-int getJavaVersion(String minecraftVersion) {
+int getJavaVersionAsInteger(String minecraftVersion) {
 	return stonecutter.compare("1.20.5", minecraftVersion) == 1 ?
 			stonecutter.compare("1.18", minecraftVersion) == 1 ?
 					stonecutter.compare("1.17", minecraftVersion) == 1 ?
@@ -246,4 +238,198 @@ Properties getPlayerProperties() {
 		println("Failed to find player properties at ${playerPropertiesFile}")
 	}
 	return playerProperties
+}
+
+Properties getPublicationProperties() {
+	def properties = new Properties()
+	def publicationPropertiesFile = project.rootProject.file("publishing/publication.properties")
+	if (publicationPropertiesFile.exists()) {
+		publicationPropertiesFile.withInputStream { stream ->
+			properties.load(stream)
+		}
+	} else {
+		println("Failed to publication properties at ${publicationPropertiesFile}")
+	}
+	return properties
+}
+
+static PublicationVersion[] getPublicationVersions(Properties pubProperties) {
+	def pubVersions = []
+	def versions = pubProperties.get("publication_versions").toString().split(" ")
+
+	versions.each { version ->
+		if (version.contains("[")) {
+			def range = version.substring(0, version.length() - 1).split("\\[")
+			if (range.size() == 2) {
+				def min = range[0]
+				def max = range[1]
+				if (!max.contains(".")) {
+					def i = min.lastIndexOf(".")
+					if (i != -1) {
+						max = min.substring(0, i + 1) + max
+					} else {
+						max = min + "." + max
+					}
+				}
+				pubVersions.add(new PublicationVersion(projectVersion: min, minVersion: min, maxVersion: max))
+			}
+		} else {
+			pubVersions.add(new PublicationVersion(projectVersion: version, minVersion: version, maxVersion: version))
+		}
+	}
+
+	return pubVersions
+}
+
+def getBuildedModFileOrDefault(String modName, String modVersion, String minecraftVersion) {
+	def path = "libs/${modName}-${modVersion}+${minecraftVersion}.jar"
+	def provider = project.rootProject.layout.buildDirectory.file(path)
+	def regularFile = provider.orNull
+	if (regularFile == null || !regularFile.getAsFile().exists()) {
+		println "[PublishMods] [WARNING] Failed to find jar file for ${minecraftVersion} at '${path}'! Using archive file!"
+		return remapJar.archiveFile
+	}
+	return regularFile.getAsFile()
+}
+
+String getChangeLog() {
+	def file = project.rootProject.file("publishing/CHANGELOG.md")
+	if (file.exists()) {
+		def text = file.getText()
+		if (!text.isBlank()) {
+			return text
+		}
+		println "[PublishMods] [WARNING] No changelog provided!"
+	}
+	println "[PublishMods] [WARNING] Failed to find changelog file at '${file.path}'!"
+	return "No changelog specified."
+}
+
+publishMods {
+	def pubProperties = getPublicationProperties()
+	def pubVersions = getPublicationVersions(pubProperties)
+	def modrinthProjectId = pubProperties.get("modrinth_id").toString()
+	def curseForgeProjectId = pubProperties.get("curseforge_id").toString()
+	def maxJavaVersion = JavaVersion.toVersion(pubProperties.get("max_java_version"))
+	def isClient = Boolean.parseBoolean(pubProperties.get("is_for_client").toString())
+	def isDry = Boolean.parseBoolean(pubProperties.get("imitation").toString())
+	def isServer = Boolean.parseBoolean(pubProperties.get("is_for_server").toString())
+	def requiresDepends = pubProperties.get("requires").toString().split(" ")
+	def optionalDepends = pubProperties.get("optional").toString().split(" ")
+	def incompatibleDepends = pubProperties.get("incompatible").toString().split(" ")
+	def embedsDepends = pubProperties.get("embeds").toString().split(" ")
+	def loaders = pubProperties.get("loaders").toString().split(" ")
+
+	def versionTypeProperty = pubProperties.get("version_type").toString()
+	def versionType
+	if (versionTypeProperty == "RELEASE") {
+		versionType = STABLE
+	} else if (versionTypeProperty == "BETA") {
+		versionType = BETA
+	} else if (versionTypeProperty == "ALPHA") {
+		versionType = ALPHA
+	} else {
+		return
+	}
+
+	PublicationVersion pubVersion = null
+	def publish = pubVersions.any {
+		def bl = it.projectVersion == minecraftVersion
+		if (bl) {
+			pubVersion = it
+		}
+		return bl
+	}
+
+	if (publish) {
+		def versionName = "[${modVersion}+${minecraftVersion}] ${modName}"
+		displayName = versionName
+		println "[PublishMods] [INFO] Configuring '${versionName}' for publishing"
+		file = getBuildedModFileOrDefault(modName, modVersion, minecraftVersion)
+		changelog = getChangeLog()
+		type = versionType
+		modLoaders.addAll(loaders)
+
+		def bl = providers.environmentVariable("CURSEFORGE_API_KEY").getOrNull() == null
+		def bl2 = providers.environmentVariable("MODRINTH_API_KEY").getOrNull() == null
+		def bl3 = isDry || bl || bl2
+		dryRun = bl3
+		if (bl3) {
+			println "[PublishMods] [WARNING] Dry Run is Enabled!"
+		}
+
+		curseforge {
+			projectId = curseForgeProjectId
+			accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+
+			for (i in javaVersion.ordinal()..<maxJavaVersion.ordinal() + 1) {
+				javaVersions.add(JavaVersion.values()[i])
+			}
+
+			clientRequired = isClient
+			serverRequired = isServer
+
+			if (pubVersion.minVersion != pubVersion.maxVersion) {
+				minecraftVersionRange {
+					start = pubVersion.minVersion
+					end = pubVersion.maxVersion
+				}
+			} else {
+				minecraftVersions.add(minecraftVersion)
+			}
+
+			if (requiresDepends.first() != "none") {
+				requires(requiresDepends)
+			}
+			if (optionalDepends.first() != "none") {
+				optional(optionalDepends)
+			}
+			if (incompatibleDepends.first() != "none") {
+				incompatible(incompatibleDepends)
+			}
+			if (embedsDepends.first() != "none") {
+				embeds(embedsDepends)
+			}
+		}
+
+		modrinth {
+			projectId = modrinthProjectId
+			accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+
+			if (pubVersion.minVersion != pubVersion.maxVersion) {
+				minecraftVersionRange {
+					start = pubVersion.minVersion
+					end = pubVersion.maxVersion
+				}
+			} else {
+				minecraftVersions.add(minecraftVersion)
+			}
+
+			if (requiresDepends.first() != "none") {
+				requires(requiresDepends)
+			}
+			if (optionalDepends.first() != "none") {
+				optional(optionalDepends)
+			}
+			if (incompatibleDepends.first() != "none") {
+				incompatible(incompatibleDepends)
+			}
+			if (embedsDepends.first() != "none") {
+				embeds(embedsDepends)
+			}
+		}
+	}
+}
+
+class PublicationVersion {
+	def projectVersion
+	def minVersion
+	def maxVersion
+
+	String toString() {
+		if (minVersion != maxVersion) {
+			return "${projectVersion}[${minVersion}-${maxVersion}]"
+		}
+		return projectVersion
+	}
 }

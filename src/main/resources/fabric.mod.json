@@ -29,7 +29,7 @@
         "fabricloader": ">=${fabric_loader}",
         "minecraft": ">=${minecraft}",
         "java": ">=${java}",
-        "fabric-api": ">=${fabric_api}"
+        "${fabric_api_id}": ">=${fabric_api}"
     },
     "accessWidener": "aws/${minecraft}.accesswidener",
     "mixins": [

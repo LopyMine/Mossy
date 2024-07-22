@@ -47,8 +47,8 @@ public class MossyConfig {
 
 	private static @NotNull MossyConfig create() {
 		MossyConfig config = new MossyConfig();
-		String json = GSON.toJson(CODEC.encode(config, JsonOps.INSTANCE, JsonOps.INSTANCE.empty())/*? if >=1.20.5 {*/.getOrThrow());/*?} else*//*.getOrThrow(false, LOGGER::error));*/
 		try (FileWriter writer = new FileWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
+			String json = GSON.toJson(CODEC.encode(config, JsonOps.INSTANCE, JsonOps.INSTANCE.empty())/*? if >=1.20.5 {*/.getOrThrow());/*?} else*//*.getOrThrow(false, LOGGER::error));*/
 			writer.write(json);
 		} catch (Exception e) {
 			LOGGER.error("Failed to create config", e);
@@ -72,9 +72,8 @@ public class MossyConfig {
 	public void save() {
 		MossyClient.setConfig(this);
 		CompletableFuture.runAsync(() -> {
-			String json = GSON.toJson(CODEC.encode(this, JsonOps.INSTANCE, JsonOps.INSTANCE.empty())/*? if >=1.20.5 {*/.getOrThrow());/*?} else*//*.getOrThrow(false, LOGGER::error));*/
-
 			try (FileWriter writer = new FileWriter(CONFIG_FILE, StandardCharsets.UTF_8)) {
+				String json = GSON.toJson(CODEC.encode(this, JsonOps.INSTANCE, JsonOps.INSTANCE.empty())/*? if >=1.20.5 {*/.getOrThrow());/*?} else*//*.getOrThrow(false, LOGGER::error));*/
 				writer.write(json);
 			} catch (Exception e) {
 				LOGGER.error("Failed to save config", e);
