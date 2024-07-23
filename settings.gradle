@@ -24,7 +24,7 @@ plugins {
     id "dev.kikugie.stonecutter" version "0.4.2"
 }
 
-def multiVersions = multi_versions.split(" ")
+def multiVersions = getMultiVersions()
 
 println "Found MC versions: ${multiVersions}"
 
@@ -164,5 +164,18 @@ static String getDependVersion(String modId, String minecraftVersion) {
     }
 
     return result["version_number"].toString()
+}
+
+String[] getMultiVersions() {
+	def versions = []
+	multi_versions.toString().split(" ").each { s ->
+		def index = s.indexOf("[")
+		if (index == -1) {
+			versions.add(s)
+			return
+		}
+		versions.add(s.substring(0, index))
+	}
+	return versions
 }
 

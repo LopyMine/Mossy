@@ -14,15 +14,18 @@ def modAuthors = project.mod_authors
 def modLicense = project.mod_license
 
 def minecraftVersion = stonecutter.current.version.toString() // Current MC version from "./versions/" folder
+def versionsWithSupportRange = getVersionsWithSupportRange()
+def supportedMinecraftVersionRange = getSupportedMinecraftVersionRange(versionsWithSupportRange, minecraftVersion)
+println "[${minecraftVersion}] Supported Minecraft Versions: ${supportedMinecraftVersionRange}"
 def lombokVersion = project.lombok_version
 def fabricLoader = findProperty("build.fabric_loader")
 
 def javaVersionAsInt = getJavaVersionAsInteger(minecraftVersion)
 def javaVersion = JavaVersion.toVersion(javaVersionAsInt)
-println "Using ${javaVersion.toString()} Java"
+println "[${minecraftVersion}] Using Java: ${javaVersion.toString()}"
 def fabricAPI = findProperty("build.fabric_api")
 
-version = "${modVersion}+${stonecutter.current.version}"
+version = "${modVersion}+${supportedMinecraftVersionRange}"
 group = modMavenGroup
 
 j52j {
@@ -186,6 +189,18 @@ jar {
 	}
 }
 
+static String getSupportedMinecraftVersionRange(VersionWithSupportRange[] versionsWithSupportRange, String currentMinecraftVersion) {
+	def result = versionsWithSupportRange.findResult { v ->
+		def min = v.minVersion.toString()
+		def max = v.maxVersion.toString()
+		if (v.projectVersion == currentMinecraftVersion && min != max) {
+			return "${min}-${max}".toString()
+		}
+		return null
+	}
+	return result == null ? currentMinecraftVersion : result
+}
+
 String getNickname(String nickname) {
 	if (nickname == null) {
 		return null
@@ -235,27 +250,25 @@ Properties getPlayerProperties() {
 			playerProperties.load(stream)
 		}
 	} else {
-		println("Failed to find player properties at ${playerPropertiesFile}")
+		println "Failed to find player properties at ${playerPropertiesFile}"
 	}
 	return playerProperties
 }
 
 Properties getPublicationProperties() {
 	def properties = new Properties()
-	def publicationPropertiesFile = project.rootProject.file("publishing/publication.properties")
+	def publicationPropertiesFile = project.rootProject.file("publish/publish.properties")
 	if (publicationPropertiesFile.exists()) {
 		publicationPropertiesFile.withInputStream { stream ->
 			properties.load(stream)
 		}
-	} else {
-		println("Failed to publication properties at ${publicationPropertiesFile}")
 	}
 	return properties
 }
 
-static PublicationVersion[] getPublicationVersions(Properties pubProperties) {
+VersionWithSupportRange[] getVersionsWithSupportRange() {
 	def pubVersions = []
-	def versions = pubProperties.get("publication_versions").toString().split(" ")
+	def versions = project.multi_versions.toString().split(" ")
 
 	versions.each { version ->
 		if (version.contains("[")) {
@@ -271,10 +284,10 @@ static PublicationVersion[] getPublicationVersions(Properties pubProperties) {
 						max = min + "." + max
 					}
 				}
-				pubVersions.add(new PublicationVersion(projectVersion: min, minVersion: min, maxVersion: max))
+				pubVersions.add(new VersionWithSupportRange(projectVersion: min, minVersion: min, maxVersion: max))
 			}
 		} else {
-			pubVersions.add(new PublicationVersion(projectVersion: version, minVersion: version, maxVersion: version))
+			pubVersions.add(new VersionWithSupportRange(projectVersion: version, minVersion: version, maxVersion: version))
 		}
 	}
 
@@ -293,7 +306,7 @@ def getBuildedModFileOrDefault(String modName, String modVersion, String minecra
 }
 
 String getChangeLog() {
-	def file = project.rootProject.file("publishing/CHANGELOG.md")
+	def file = project.rootProject.file("publish/CHANGELOG.md")
 	if (file.exists()) {
 		def text = file.getText()
 		if (!text.isBlank()) {
@@ -307,7 +320,12 @@ String getChangeLog() {
 
 publishMods {
 	def pubProperties = getPublicationProperties()
-	def pubVersions = getPublicationVersions(pubProperties)
+	if (pubProperties.isEmpty()) {
+		println "[PublishMods] [WARNING] Failed to publish.properties at ${publicationPropertiesFile}"
+		println "[PublishMods] [WARNING] Configuration canceled"
+		return
+	}
+	def pubVersions = versionsWithSupportRange
 	def modrinthProjectId = pubProperties.get("modrinth_id").toString()
 	def curseForgeProjectId = pubProperties.get("curseforge_id").toString()
 	def maxJavaVersion = JavaVersion.toVersion(pubProperties.get("max_java_version"))
@@ -332,7 +350,7 @@ publishMods {
 		return
 	}
 
-	PublicationVersion pubVersion = null
+	VersionWithSupportRange pubVersion = null
 	def publish = pubVersions.any {
 		def bl = it.projectVersion == minecraftVersion
 		if (bl) {
@@ -342,7 +360,7 @@ publishMods {
 	}
 
 	if (publish) {
-		def versionName = "[${modVersion}+${minecraftVersion}] ${modName}"
+		def versionName = "[${supportedMinecraftVersionRange}] ${modName} ${modVersion}"
 		displayName = versionName
 		println "[PublishMods] [INFO] Configuring '${versionName}' for publishing"
 		file = getBuildedModFileOrDefault(modName, modVersion, minecraftVersion)
@@ -421,7 +439,7 @@ publishMods {
 	}
 }
 
-class PublicationVersion {
+class VersionWithSupportRange {
 	def projectVersion
 	def minVersion
 	def maxVersion
