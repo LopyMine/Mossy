@@ -3,6 +3,9 @@ import groovy.json.JsonBuilder
 
 pluginManagement {
     repositories {
+	    mavenLocal()
+	    mavenCentral()
+	    gradlePluginPortal()
         maven {
             name "Fabric"
             url "https://maven.fabricmc.net/"
@@ -15,8 +18,6 @@ pluginManagement {
             name "Kiku Releases"
             url "https://maven.kikugie.dev/releases"
         }
-        mavenCentral()
-        gradlePluginPortal()
     }
 }
 

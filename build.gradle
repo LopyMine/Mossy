@@ -2,12 +2,14 @@ plugins {
 	id "fabric-loom" version "1.6-SNAPSHOT"
 	id "dev.kikugie.j52j" version "1.0.2"
 	id "me.modmuss50.mod-publish-plugin" version "0.5.+"
+	id "net.lopymine.discord-mod-announcer" version "1.0.0"
 }
 
 def modId = project.mod_id
 def modName = project.mod_name
 def modVersion = project.mod_version
-def modMavenGroup = project.mod_group
+def modGroup = project.mod_group
+def modMavenGroup = project.mod_maven_group
 
 def modDescription = project.mod_description
 def modAuthors = project.mod_authors
@@ -120,7 +122,7 @@ processResources {
 	def props = [:]
 	props.put("mod_id", modId.toString())
 	props.put("mod_authors", modAuthors.toString())
-	props.put("mod_group", modMavenGroup)
+	props.put("mod_group", modGroup)
 	props.put("mod_description", modDescription.toString())
 	props.put("mod_name", modName.toString())
 	props.put("mod_license", modLicense.toString())
@@ -321,8 +323,7 @@ String getChangeLog() {
 publishMods {
 	def pubProperties = getPublicationProperties()
 	if (pubProperties.isEmpty()) {
-		println "[PublishMods] [WARNING] Failed to publish.properties at ${publicationPropertiesFile}"
-		println "[PublishMods] [WARNING] Configuration canceled"
+		println "[PublishMods] [WARNING] Failed to publish.properties, configuration canceled"
 		return
 	}
 	def pubVersions = versionsWithSupportRange
@@ -330,7 +331,7 @@ publishMods {
 	def curseForgeProjectId = pubProperties.get("curseforge_id").toString()
 	def maxJavaVersion = JavaVersion.toVersion(pubProperties.get("max_java_version"))
 	def isClient = Boolean.parseBoolean(pubProperties.get("is_for_client").toString())
-	def isDry = Boolean.parseBoolean(pubProperties.get("imitation").toString())
+	def isTesting = Boolean.parseBoolean(pubProperties.get("test_publish").toString())
 	def isServer = Boolean.parseBoolean(pubProperties.get("is_for_server").toString())
 	def requiresDepends = pubProperties.get("requires").toString().split(" ")
 	def optionalDepends = pubProperties.get("optional").toString().split(" ")
@@ -370,10 +371,10 @@ publishMods {
 
 		def bl = providers.environmentVariable("CURSEFORGE_API_KEY").getOrNull() == null
 		def bl2 = providers.environmentVariable("MODRINTH_API_KEY").getOrNull() == null
-		def bl3 = isDry || bl || bl2
+		def bl3 = isTesting || bl || bl2
 		dryRun = bl3
 		if (bl3) {
-			println "[PublishMods] [WARNING] Dry Run is Enabled!"
+			println "[PublishMods] [WARNING] Test Mode is Enabled!"
 		}
 
 		curseforge {
@@ -411,6 +412,7 @@ publishMods {
 		}
 
 		modrinth {
+			displayName = "${modName} ${modVersion}"
 			projectId = modrinthProjectId
 			accessToken = providers.environmentVariable("MODRINTH_API_KEY")
 
@@ -440,9 +442,9 @@ publishMods {
 }
 
 class VersionWithSupportRange {
-	def projectVersion
-	def minVersion
-	def maxVersion
+	String projectVersion
+	String minVersion
+	String maxVersion
 
 	String toString() {
 		if (minVersion != maxVersion) {
@@ -450,4 +452,42 @@ class VersionWithSupportRange {
 		}
 		return projectVersion
 	}
+}
+
+announceToDiscord {
+	def pubProperties = getPublicationProperties()
+	if (pubProperties.isEmpty()) {
+		return
+	}
+
+	announceMode = minecraftVersion == versionsWithSupportRange.last().projectVersion ?
+			providers.environmentVariable("DISCORD_BOT_TOKEN").orNull == null || Boolean.parseBoolean(pubProperties.get("test_publish").toString()) ?
+					TEST
+					:
+					ENABLE
+			:
+			DISABLE
+
+	token = providers.environmentVariable("DISCORD_BOT_TOKEN")
+	icon = project.rootProject.file("src/main/resources/icon/icon.png")
+
+	title = "${modName} v${modVersion} is out!"
+	showcaseThreadTitle  = "${modName} v${modVersion} Showcase"
+ 	changelog = getChangeLog()
+	color = pubProperties.get("project_color") == null ? null : getDecimalColorFromHEX(pubProperties.get("project_color").toString())
+
+	modrinthLink = "https://modrinth.com/project/${modId}"
+	curseForgeLink = "https://www.curseforge.com/minecraft/mc-mods/${modId}"
+	githubLink = "https://github.com/LopyMine/${modId}"
+
+	uploaderId = pubProperties.get("uploaderId") == null ? null : pubProperties.get("uploaderId").toString()
+	announcementChannelId = pubProperties.get("announcementChannelId").toString()
+	testAnnouncementChannelId = pubProperties.get("testAnnouncementChannelId").toString()
+	pingRoles = [modName]
+
+	showcaseImages = [project.rootProject.file("img/banner.png"), project.rootProject.file("img/launching_minecraft.gif"), project.rootProject.file("img/switching_version.gif")]
+}
+
+static int getDecimalColorFromHEX(String hexColor) {
+	return Integer.parseInt(hexColor, 16)
 }
