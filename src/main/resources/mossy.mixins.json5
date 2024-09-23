@@ -7,6 +7,7 @@
         
     ],
     "client": [
+        /*? =1.20.1 */
 	    "ExampleMixin"
     ],
     "injectors": {
