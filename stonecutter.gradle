@@ -3,7 +3,7 @@ plugins {
 }
 stonecutter.active "1.20.6" /* [SC] DO NOT EDIT */
 
-stonecutter.registerChiseled tasks.register("chiseledBuildAndCollect", stonecutter.chiseled) {
+stonecutter.registerChiseled tasks.register("chiseledBuildAndCollectAll", stonecutter.chiseled) {
 	setGroup("project")
 	ofTask("buildAndCollect")
 }
@@ -12,7 +12,6 @@ stonecutter.registerChiseled tasks.register("chiseledPublishAll", stonecutter.ch
 	setGroup("project")
 	ofTask("publishMods")
 }
-
 
 stonecutter.registerChiseled tasks.register("chiseledPublishSpecified", stonecutter.chiseled) {
 	def list = getPublicationVersions()

@@ -86,24 +86,31 @@ loom {
 		accessWidenerPath = accessWidenerFile
 	}
 
-	def playerProperties = getPlayerProperties()
-
-	def playerNicknameProperty = playerProperties.get("player_nickname") // Your in-game nickname
-	def playerNickname = getNickname(playerNicknameProperty)
-
-	def playerUuidProperty = playerProperties.get("player_uuid") // Your in-game uuid
-	def playerUuid = getUUID(playerUuidProperty)
+	def personalProperties = getPersonalProperties()
+	def pathToSpongeMixin = personalProperties.get("absolute_path_to_sponge_mixin")
+	def quickPlay = getNickname(personalProperties.get("quick_play"))
+	def playerNickname = getNickname(personalProperties.get("player_nickname"))
+	def playerUuid = getUUID(personalProperties.get("player_uuid"))
 
 	runConfigs.configureEach { config ->
 		config.setIdeConfigGenerated(true) // generate IDE tasks for running client, server and testmod, datagen if those are present
-		config.setRunDir("../../runs/${config.environment}") // use a global run directory for all versions
+		config.setRunDir("../../runs/${config.environment}") // use different run directory for all environments
 
-		if (config.getEnvironment() == "client") { // setting player properties from "./players/player.properties" file
-			if (playerNickname != null) {
+		if (config.getEnvironment() == "client") { // setting player properties from "./players/personal.properties" file
+			if (playerNickname != null && pathToSpongeMixin.toString() != "none") {
 				config.programArgs("--username", playerNickname.toString())
 			}
-			if (playerUuid != null) {
+			if (playerUuid != null && pathToSpongeMixin.toString() != "none") {
 				config.programArgs("--uuid", playerUuid.toString())
+			}
+			if (playerUuid != null && pathToSpongeMixin.toString() != "none") {
+				config.programArgs("--uuid", playerUuid.toString())
+			}
+			if (quickPlay != null && quickPlay.toString() != "none") {
+				config.programArgs("--quickPlaySingleplayer", quickPlay.toString())
+			}
+			if (pathToSpongeMixin != null && pathToSpongeMixin.toString() != "none") {
+				config.vmArg("-javaagent:${pathToSpongeMixin.toString()}")
 			}
 		}
 	}
@@ -141,6 +148,10 @@ processResources {
 	filesMatching("${modId}.mixins.json5") {
 		expand(props)
 	}
+
+	filesMatching("assets/${modId}/lang/*.json") {
+		expand(props)
+	}
 }
 
 stonecutter {
@@ -151,6 +162,12 @@ stonecutter {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = (javaVersionAsInt as int)
+}
+
+tasks.register('regenerateRunConfigurations', Delete) {
+	group = 'project'
+	delete(project.rootProject.file(".idea/runConfigurations"))
+	finalizedBy("ideaSyncTask")
 }
 
 tasks.register('buildAndCollect', Copy) {
@@ -219,7 +236,6 @@ publishMods {
 	if (bl3) {
 		println "[PublishMods] Test Mode Enabled!"
 	}
-
 
 //	curseforge {
 //		projectId = curseForgeProjectId
@@ -337,17 +353,26 @@ int getJavaVersionAsInteger(String minecraftVersion) {
 			21
 }
 
-Properties getPlayerProperties() {
-	def playerProperties = new Properties()
-	def playerPropertiesFile = project.rootProject.file("player/player.properties")
-	if (playerPropertiesFile.exists()) {
-		playerPropertiesFile.withInputStream { stream ->
-			playerProperties.load(stream)
+Properties getPersonalProperties() {
+	def personalProperties = new Properties()
+	def personalPropertiesFile = project.rootProject.file("personal/personal.properties")
+	if (personalPropertiesFile.exists()) {
+		personalPropertiesFile.withInputStream { stream ->
+			personalProperties.load(stream)
 		}
-	} else {
-		println "Failed to find player properties at ${playerPropertiesFile}"
+
+		for (line in personalPropertiesFile.readLines()) {
+			def key = "absolute_path_to_sponge_mixin"
+			if (line.startsWith(key)) {
+				def substring = line.substring(key.length()+1)
+				if (!substring.isEmpty()) {
+					personalProperties.setProperty(key, substring)
+				}
+			}
+		}
+
 	}
-	return playerProperties
+	return personalProperties
 }
 
 MultiVersion getCurrentMultiVersion(String minecraftVersion) {
