@@ -7,8 +7,8 @@
         
     ],
     "client": [
-        /*? =1.20.1 */
-	    "ExampleMixin"
+        /*? =1.20.1*/
+	    /*"ExampleMixin"*/
     ],
     "injectors": {
         "defaultRequire": 1

@@ -237,39 +237,39 @@ publishMods {
 		println "[PublishMods] Test Mode Enabled!"
 	}
 
-//	curseforge {
-//		projectId = curseForgeProjectId
-//		accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
-//
-//		for (i in javaVersion.ordinal()..<maxJavaVersion.ordinal() + 1) {
-//			javaVersions.add(JavaVersion.values()[i])
-//		}
-//
-//		clientRequired = isClient
-//		serverRequired = isServer
-//
-//	if (currentMultiVersion.minVersion != currentMultiVersion.maxVersion) {
-//		minecraftVersionRange {
-//			start = currentMultiVersion.minVersion
-//			end = currentMultiVersion.maxVersion
-//		}
-//	} else {
-//		minecraftVersions.add(currentMultiVersion.maxVersion)
-//	}
-//
-//		if (requiresDepends.first() != "none") {
-//			requires(requiresDepends)
-//		}
-//		if (optionalDepends.first() != "none") {
-//			optional(optionalDepends)
-//		}
-//		if (incompatibleDepends.first() != "none") {
-//			incompatible(incompatibleDepends)
-//		}
-//		if (embedsDepends.first() != "none") {
-//			embeds(embedsDepends)
-//		}
-//	}
+	curseforge {
+		projectId = curseForgeProjectId
+		accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+
+		for (i in javaVersion.ordinal()..<maxJavaVersion.ordinal() + 1) {
+			javaVersions.add(JavaVersion.values()[i])
+		}
+
+		clientRequired = isClient
+		serverRequired = isServer
+
+		if (currentMultiVersion.minVersion != currentMultiVersion.maxVersion) {
+			minecraftVersionRange {
+				start = currentMultiVersion.minVersion
+				end = currentMultiVersion.maxVersion
+			}
+		} else {
+			minecraftVersions.add(currentMultiVersion.maxVersion)
+		}
+
+		if (requiresDepends.first() != "none") {
+			requires(requiresDepends)
+		}
+		if (optionalDepends.first() != "none") {
+			optional(optionalDepends)
+		}
+		if (incompatibleDepends.first() != "none") {
+			incompatible(incompatibleDepends)
+		}
+		if (embedsDepends.first() != "none") {
+			embeds(embedsDepends)
+		}
+	}
 
 	modrinth {
 		projectId = modrinthProjectId
