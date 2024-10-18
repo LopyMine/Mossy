@@ -35,7 +35,7 @@ public class ModMenuUtils {
 	}
 
 	public static Identifier getContentId(SimpleContent content, String optionId) {
-		return Mossy.id(String.format("textures/config/%s/%s.%s", content.getFolder(), optionId, content.getFileExtension()));
+		return Mossy.id(String.format("textures/config/%s.%s", optionId, content.getExt()));
 	}
 
 	public static Text getModTitle() {

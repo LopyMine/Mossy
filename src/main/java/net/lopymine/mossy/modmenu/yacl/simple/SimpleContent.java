@@ -4,16 +4,14 @@ import lombok.Getter;
 
 @Getter
 public enum SimpleContent {
-	NONE("none", "none"),
-	IMAGE("image", "png"),
-	WEBP("webp", "webp"),
-	GIF("gif", "gif");
+	NONE("none"),
+	IMAGE("png"),
+	WEBP("webp"),
+	GIF("gif");
 
-	private final String folder;
-	private final String fileExtension;
+	private final String ext;
 
-	SimpleContent(String folder, String fileExtension) {
-		this.folder        = folder;
-		this.fileExtension = fileExtension;
+	SimpleContent(String ext) {
+		this.ext = ext;
 	}
 }
