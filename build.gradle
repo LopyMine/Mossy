@@ -226,6 +226,7 @@ jar {
 }
 
 println providers.environmentVariable("TEST_KEY").getOrNull()
+println providers.gradleProperty('TEST_KEY').getOrNull()
 
 publishMods {
 	def loaders = prop("loaders").toString().split(" ")
