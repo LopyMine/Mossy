@@ -225,9 +225,6 @@ jar {
 	}
 }
 
-println providers.environmentVariable("TEST_KEY").getOrNull()
-println providers.gradleProperty('TEST_KEY').getOrNull()
-
 publishMods {
 	def loaders = prop("loaders").toString().split(" ")
 	def modrinthProjectId = prop("modrinth_id").toString()
@@ -446,7 +443,7 @@ def getVerifiedOrDefaultJar(String modName, String modVersion, String minecraftV
 	def regularFile = provider.orNull
 	if (regularFile == null || !regularFile.getAsFile().exists()) {
 		println "[PublishMods] Failed to find jar file at '${path}'! Using archive file!"
-		return jar.archiveFile
+		return remapJar.archiveFile
 	}
 	return regularFile.getAsFile()
 }
