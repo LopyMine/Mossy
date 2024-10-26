@@ -245,7 +245,7 @@ publishMods {
 
 	println "[PublishMods] Configuring '${versionName}' for publishing"
 	displayName = versionName
-	file = getVerifiedOrDefaultJar(prop("mod_name"), prop("mod_version"), mcVersion)
+	file = remapJar.archiveFile //getVerifiedOrDefaultJar(prop("mod_name"), prop("mod_version"), mcVersion)
 	changelog = getChangeLog()
 	if (versionTypeProperty == "RELEASE") {
 		type = STABLE
