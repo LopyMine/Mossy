@@ -225,6 +225,8 @@ jar {
 	}
 }
 
+println providers.environmentVariable("TEST_KEY").getOrNull()
+
 publishMods {
 	def loaders = prop("loaders").toString().split(" ")
 	def modrinthProjectId = prop("modrinth_id").toString()
