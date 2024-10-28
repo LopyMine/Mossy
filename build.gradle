@@ -157,7 +157,50 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.release = (javaVersionAsInt as int)
 }
 
-tasks.register('createPersonalProperties') {
+tasks.register('generatePublishWorkflowsForEachVersion') {
+	group = 'project'
+	doFirst {
+		def workflowsFolder = project.rootProject.file(".github/workflows/")
+		if (!workflowsFolder.exists() && !workflowsFolder.mkdirs()) {
+			return
+		}
+		def versions = prop("multi_versions").split(" ")
+		versions.each { version ->
+			def publishVersionWorkflow = workflowsFolder.toPath().resolve("publish_${version.toString()}.yml").toFile()
+			if (!publishVersionWorkflow.exists()) {
+				publishVersionWorkflow.createNewFile()
+				publishVersionWorkflow.text =
+					"""
+					# Generated workflow by task
+
+					name: Publish Specific Versions
+					on: [workflow_dispatch] # Manual trigger
+					
+					permissions:
+					  contents: write
+					
+					jobs:
+					  build:
+					    runs-on: ubuntu-22.04
+					    container:
+					      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
+					      options: --user root
+					    steps:
+					      - uses: actions/checkout@v4
+					      - name: make gradle wrapper executable
+					        run: chmod +x ./gradlew
+					      - name: Publish ${version.toString()} Mod Version
+					        run: ./gradlew chiseledBuildAndCollect+${version.toString()} chiseledPublish+${version.toString()}
+					        env:
+					          CURSEFORGE_API_KEY: \${{ secrets.CURSEFORGE_API_KEY }}
+					          MODRINTH_API_KEY: \${{ secrets.MODRINTH_API_KEY }}
+					""".stripIndent().strip()
+			}
+		}
+	}
+}
+
+tasks.register('generatePersonalProperties') {
 	group = 'project'
 
 	doFirst {
@@ -245,7 +288,7 @@ publishMods {
 
 	println "[PublishMods] Configuring '${versionName}' for publishing"
 	displayName = versionName
-	file = remapJar.archiveFile //getVerifiedOrDefaultJar(prop("mod_name"), prop("mod_version"), mcVersion)
+	file = getVerifiedOrDefaultJar(prop("mod_name"), prop("mod_version"), mcVersion)
 	changelog = getChangeLog()
 	if (versionTypeProperty == "RELEASE") {
 		type = STABLE
