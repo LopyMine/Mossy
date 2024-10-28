@@ -1,6 +1,6 @@
 # Generated workflow by task
 
-name: Publish Specific Versions
+name: Publish 1.21 Version
 on: [workflow_dispatch] # Manual trigger
 
 permissions:

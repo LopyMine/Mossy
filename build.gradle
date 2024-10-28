@@ -173,7 +173,7 @@ tasks.register('generatePublishWorkflowsForEachVersion') {
 					"""
 					# Generated workflow by task
 
-					name: Publish Specific Versions
+					name: Publish ${version.toString()} Version
 					on: [workflow_dispatch] # Manual trigger
 					
 					permissions:
