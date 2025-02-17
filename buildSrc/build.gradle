@@ -1,0 +1,47 @@
+plugins {
+	id 'java'
+	id 'java-gradle-plugin'
+}
+
+group = 'net.lopymine.mossy'
+version = '1.0.0'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	gradlePluginPortal()
+	maven {
+		name "Fabric"
+		url "https://maven.fabricmc.net/"
+	}
+	maven {
+		name "Kiku Snapshots"
+		url "https://maven.kikugie.dev/snapshots"
+	}
+	maven {
+		name "Kiku Releases"
+		url "https://maven.kikugie.dev/releases"
+	}
+}
+
+dependencies {
+	compileOnly "org.projectlombok:lombok:${property("lombok_version")}"
+	annotationProcessor "org.projectlombok:lombok:${property("lombok_version")}"
+
+	implementation "me.modmuss50.mod-publish-plugin:me.modmuss50.mod-publish-plugin.gradle.plugin:0.7.4"
+	implementation "dev.kikugie.stonecutter:dev.kikugie.stonecutter.gradle.plugin:0.4.4"
+	implementation "fabric-loom:fabric-loom.gradle.plugin:1.8-SNAPSHOT"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+gradlePlugin {
+	plugins {
+		create("mossy-plugin") {
+			id                  = "net.lopymine.mossy-plugin"
+			implementationClass = "net.lopymine.mossy.MossyPlugin"
+		}
+	}
+}
