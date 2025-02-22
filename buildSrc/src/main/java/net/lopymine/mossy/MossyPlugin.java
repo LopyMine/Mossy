@@ -1,12 +1,10 @@
 package net.lopymine.mossy;
 
 import dev.kikugie.stonecutter.*;
-import lombok.experimental.ExtensionMethod;
+import me.modmuss50.mpp.ModPublishExtension;
 import org.gradle.api.*;
 import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.provider.Provider;
 
-import net.fabricmc.loom.LoomGradleExtension;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 
 import net.lopymine.mossy.tasks.*;
@@ -23,9 +21,14 @@ public class MossyPlugin implements Plugin<Project> {
 		plugins.apply("fabric-loom");
 		plugins.apply("me.modmuss50.mod-publish-plugin");
 
+		//JavaVersion javaVersion = getJavaVersion(project); TODO
 
 		project.getExtensions().configure(LoomGradleExtensionAPI.class, (loom) -> {
 			MossyLoomManager.apply(project, loom);
+		});
+
+		project.getExtensions().configure(ModPublishExtension.class, (mpe) -> {
+			MossyModPublishManager.apply(project, mpe);
 		});
 
 		project.getTasks().register("generatePublishWorkflowsForEachVersion", GeneratePublishWorkflowsForEachVersionTask.class, (task) -> {

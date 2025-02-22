@@ -143,52 +143,7 @@ jar {
 }
 
 publishMods {
-	def loaders = prop("loaders").toString().split(" ")
-	def modrinthProjectId = prop("modrinth_id").toString()
-	def embedsDepends = prop("embeds_depends").toString().split(" ")
-	def curseForgeProjectId = prop("curseforge_id").toString()
-	def requiresDepends = prop("requires_depends").toString().split(" ")
-	def optionalDepends = prop("optional_depends").toString().split(" ")
-	def incompatibleDepends = prop("incompatible_depends").toString().split(" ")
-	def versionTypeProperty = prop("version_type").toString()
-	def maxJavaVersion = JavaVersion.toVersion(prop("max_java_version"))
-	def isClient = Boolean.parseBoolean(prop("is_for_client)").toString())
-	def isTesting = Boolean.parseBoolean(prop("test_publish)").toString())
-	def isServer = Boolean.parseBoolean(prop("is_for_server)").toString())
-	def versionName = "[${currentMultiVersion.toVersionRange()}] ${prop("mod_name")} v${prop("mod_version")}"
-	def bl = providers.environmentVariable("CURSEFORGE_API_KEY").getOrNull() == null
-	def bl2 = providers.environmentVariable("MODRINTH_API_KEY").getOrNull() == null
-	def bl3 = isTesting || bl || bl2
-
-	println "[PublishMods] Configuring '${versionName}' for publishing"
-	displayName = versionName
-	file = getVerifiedOrDefaultJar(prop("mod_name"), prop("mod_version"), mcVersion)
-	changelog = getChangeLog()
-	if (versionTypeProperty == "RELEASE") {
-		type = STABLE
-	} else if (versionTypeProperty == "BETA") {
-		type = BETA
-	} else if (versionTypeProperty == "ALPHA") {
-		type = ALPHA
-	}
-	modLoaders.addAll(loaders)
-	dryRun = bl3
-
-	if (bl3) {
-		println "[PublishMods] Test Mode Enabled!"
-	}
-
 	curseforge {
-		projectId = curseForgeProjectId
-		accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
-
-		for (i in javaVersion.ordinal()..<maxJavaVersion.ordinal() + 1) {
-			javaVersions.add(JavaVersion.values()[i])
-		}
-
-		clientRequired = isClient
-		serverRequired = isServer
-
 		if (currentMultiVersion.minVersion != currentMultiVersion.maxVersion) {
 			minecraftVersionRange {
 				start = currentMultiVersion.minVersion
@@ -196,26 +151,10 @@ publishMods {
 			}
 		} else {
 			minecraftVersions.add(currentMultiVersion.maxVersion)
-		}
-
-		if (requiresDepends.first() != "none") {
-			requires(requiresDepends)
-		}
-		if (optionalDepends.first() != "none") {
-			optional(optionalDepends)
-		}
-		if (incompatibleDepends.first() != "none") {
-			incompatible(incompatibleDepends)
-		}
-		if (embedsDepends.first() != "none") {
-			embeds(embedsDepends)
 		}
 	}
 
 	modrinth {
-		projectId = modrinthProjectId
-		accessToken = providers.environmentVariable("MODRINTH_API_KEY")
-
 		if (currentMultiVersion.minVersion != currentMultiVersion.maxVersion) {
 			minecraftVersionRange {
 				start = currentMultiVersion.minVersion
@@ -224,60 +163,7 @@ publishMods {
 		} else {
 			minecraftVersions.add(currentMultiVersion.maxVersion)
 		}
-
-		if (requiresDepends.first() != "none") {
-			requires(requiresDepends)
-		}
-		if (optionalDepends.first() != "none") {
-			optional(optionalDepends)
-		}
-		if (incompatibleDepends.first() != "none") {
-			incompatible(incompatibleDepends)
-		}
-		if (embedsDepends.first() != "none") {
-			embeds(embedsDepends)
-		}
 	}
-}
-
-static String substringBefore(Object o, String ch) {
-	if (o == null) {
-		return "null"
-	}
-	def string = o.toString()
-	def i = string.indexOf(ch)
-	if (i == -1) {
-		return string
-	} else {
-		return string.substring(0, i)
-	}
-}
-
-String getNickname(Object nickname) {
-	if (nickname == null || nickname == "null" || nickname == "none") {
-		return null
-	}
-	if (!nickname.toString().matches('^[a-zA-Z0-9_]{2,16}$')) {
-		println "WARNING — Your nickname is wrong, using default nickname 'Player'"
-		return "Player"
-	}
-	return nickname.toString()
-}
-
-UUID getUUID(Object uuid) {
-	if (uuid == null || uuid.toString() == "null" || uuid.toString() == "none") {
-		return null
-	}
-	try {
-		if (uuid.toString().indexOf("-") == -1) {
-			return UUID.fromString(uuid.toString().replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", '$1-$2-$3-$4-$5'))
-		}
-		return UUID.fromString(uuid.toString())
-	} catch (Exception e) {
-		e.printStackTrace()
-	}
-	println "WARNING — Your UUID is wrong, failed to parse it"
-	return null
 }
 
 // Cannot be static!
@@ -292,28 +178,6 @@ int getJavaVersionAsInteger(String minecraftVersion) {
 					17
 			:
 			21
-}
-
-Properties getPersonalProperties() {
-	def personalProperties = new Properties()
-	def personalPropertiesFile = project.rootProject.file("personal/personal.properties")
-	if (personalPropertiesFile.exists()) {
-		personalPropertiesFile.withInputStream { stream ->
-			personalProperties.load(stream)
-		}
-
-		for (line in personalPropertiesFile.readLines()) {
-			def key = "absolute_path_to_sponge_mixin"
-			if (line.startsWith(key)) {
-				def substring = line.substring(key.length()+1)
-				if (!substring.isEmpty()) {
-					personalProperties.setProperty(key, substring)
-				}
-			}
-		}
-
-	}
-	return personalProperties
 }
 
 MultiVersion getCurrentMultiVersion(String minecraftVersion) {
@@ -378,28 +242,6 @@ class MultiVersion {
 		}
 		return "${minVersion}-${maxVersion}"
 	}
-}
-
-def getVerifiedOrDefaultJar(String modName, String modVersion, String minecraftVersion) {
-	def path = "libs/${modName}-${modVersion}+${minecraftVersion}.jar"
-	def provider = project.rootProject.layout.buildDirectory.file(path)
-	def regularFile = provider.orNull
-	if (regularFile == null || !regularFile.getAsFile().exists()) {
-		println "[PublishMods] Failed to find jar file at '${path}'! Using archive file!"
-		return remapJar.archiveFile
-	}
-	return regularFile.getAsFile()
-}
-
-String getChangeLog() {
-	def file = project.rootProject.file("CHANGELOG.md")
-	if (file.exists()) {
-		def text = file.getText()
-		if (!text.isBlank()) {
-			return text
-		}
-	}
-	return "No changelog specified."
 }
 
 String prop(String key) {
