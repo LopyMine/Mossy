@@ -1,5 +1,3 @@
-import net.lopymine.mossy.MossyPlugin
-
 plugins {
 	id("net.lopymine.mossy-plugin")
 }

@@ -20,11 +20,11 @@ public class GeneratePersonalPropertiesTask extends DefaultTask {
 			return;
 		}
 		try {
-			File workflowFile = file.toPath().resolve("personal.properties").toFile();
-			if (workflowFile.exists()) {
+			File personalPropertiesFile = file.toPath().resolve("personal.properties").toFile();
+			if (personalPropertiesFile.exists()) {
 				return;
 			}
-			if (!workflowFile.createNewFile()) {
+			if (!personalPropertiesFile.createNewFile()) {
 				return;
 			}
 
@@ -47,7 +47,7 @@ public class GeneratePersonalPropertiesTask extends DefaultTask {
 					quick_play_world=none
 					""".stripIndent().strip();
 
-			Files.write(workflowFile.toPath(), strip.getBytes());
+			Files.write(personalPropertiesFile.toPath(), strip.getBytes());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

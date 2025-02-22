@@ -3,8 +3,14 @@ plugins {
 	id 'java-gradle-plugin'
 }
 
-group = 'net.lopymine.mossy'
-version = '1.0.0'
+def pluginId = property("plugin_id").toString()
+def pluginMavenPackage = property("plugin_maven_package").toString()
+def pluginPackage = property("plugin_package").toString()
+def pluginClass = property("plugin_class").toString()
+def pluginVersion = property("plugin_version").toString()
+
+group = pluginPackage
+version = pluginVersion
 
 repositories {
 	mavenLocal()
@@ -28,9 +34,9 @@ dependencies {
 	compileOnly "org.projectlombok:lombok:${property("lombok_version")}"
 	annotationProcessor "org.projectlombok:lombok:${property("lombok_version")}"
 
-	implementation "me.modmuss50.mod-publish-plugin:me.modmuss50.mod-publish-plugin.gradle.plugin:0.7.4"
-	implementation "dev.kikugie.stonecutter:dev.kikugie.stonecutter.gradle.plugin:0.4.4"
-	implementation "fabric-loom:fabric-loom.gradle.plugin:1.8-SNAPSHOT"
+	implementation "me.modmuss50.mod-publish-plugin:me.modmuss50.mod-publish-plugin.gradle.plugin:${property("mod_publish_plugin_version")}"
+	implementation "dev.kikugie.stonecutter:dev.kikugie.stonecutter.gradle.plugin:${property("stonecutter_version")}"
+	implementation "fabric-loom:fabric-loom.gradle.plugin:${property("fabric_loom_version")}"
 }
 
 test {
@@ -39,9 +45,9 @@ test {
 
 gradlePlugin {
 	plugins {
-		create("mossy-plugin") {
-			id                  = "net.lopymine.mossy-plugin"
-			implementationClass = "net.lopymine.mossy.MossyPlugin"
+		create(pluginId) {
+			id                  = "${pluginMavenPackage}.${pluginId}"
+			implementationClass = "${pluginPackage}.${pluginClass}"
 		}
 	}
 }

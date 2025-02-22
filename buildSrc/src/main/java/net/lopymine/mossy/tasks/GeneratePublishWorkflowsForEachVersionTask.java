@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction;
 import net.lopymine.mossy.MossyPlugin;
 
 import java.io.*;
+import java.nio.file.Files;
 
 @ExtensionMethod(MossyPlugin.class)
 public class GeneratePublishWorkflowsForEachVersionTask extends DefaultTask {
@@ -28,32 +29,32 @@ public class GeneratePublishWorkflowsForEachVersionTask extends DefaultTask {
 				if (!workflowFile.createNewFile()) {
 					continue;
 				}
-				FileWriter fileWriter = new FileWriter(workflowFile);
-				fileWriter.write("""
-					# Generated workflow by task
-
-					name: Publish MULTI_VERSION_ID Version
-					on: [workflow_dispatch] # Manual trigger
-					
-					permissions:
-					  contents: write
-					
-					jobs:
-					  build:
-					    runs-on: ubuntu-22.04
-					    container:
-					      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
-					      options: --user root
-					    steps:
-					      - uses: actions/checkout@v4
-					      - name: make gradle wrapper executable
-					        run: chmod +x ./gradlew
-					      - name: Publish MULTI_VERSION_ID Mod Version
-					        run: ./gradlew chiseledBuildAndCollect+MULTI_VERSION_ID chiseledPublish+MULTI_VERSION_ID
-					        env:
-					          CURSEFORGE_API_KEY: {{ secrets.CURSEFORGE_API_KEY }}
-					          MODRINTH_API_KEY: {{ secrets.MODRINTH_API_KEY }}
-					""".replaceAll("MULTI_VERSION_ID", multiVersion).stripIndent().strip());
+				String strip = """
+						# Generated workflow by task
+						
+						name: Publish MULTI_VERSION_ID Version
+						on: [workflow_dispatch] # Manual trigger
+						
+						permissions:
+						  contents: write
+						
+						jobs:
+						  build:
+						    runs-on: ubuntu-22.04
+						    container:
+						      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
+						      options: --user root
+						    steps:
+						      - uses: actions/checkout@v4
+						      - name: make gradle wrapper executable
+						        run: chmod +x ./gradlew
+						      - name: Publish MULTI_VERSION_ID Mod Version
+						        run: ./gradlew chiseledBuildAndCollect+MULTI_VERSION_ID chiseledPublish+MULTI_VERSION_ID
+						        env:
+						          CURSEFORGE_API_KEY: {{ secrets.CURSEFORGE_API_KEY }}
+						          MODRINTH_API_KEY: {{ secrets.MODRINTH_API_KEY }}
+						""".replaceAll("MULTI_VERSION_ID", multiVersion).stripIndent().strip();
+				Files.write(workflowFile.toPath(), strip.getBytes());
 			} catch (Exception ignored) {
 			}
 
