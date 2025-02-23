@@ -1,8 +1,7 @@
-package net.lopymine.mossy.tasks;
+package net.lopymine.mossy;
 
 import lombok.experimental.ExtensionMethod;
 import me.modmuss50.mpp.*;
-import me.modmuss50.mpp.platforms.modrinth.ModrinthApi.VersionType;
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.gradle.api.*;
 import org.gradle.api.file.RegularFile;
@@ -10,7 +9,7 @@ import org.gradle.api.provider.Provider;
 
 import net.fabricmc.loom.task.RemapJarTask;
 
-import net.lopymine.mossy.MossyPlugin;
+import net.lopymine.mossy.multi.MultiVersion;
 
 import java.io.*;
 import java.util.Arrays;
@@ -19,25 +18,9 @@ import org.jetbrains.annotations.NotNull;
 @ExtensionMethod(MossyPlugin.class)
 public class MossyModPublishManager {
 
-	public static void apply(@NotNull Project project, ModPublishExtension mpe) {
-		//	def loaders = prop("loaders").toString().split(" ")
-		//	def modrinthProjectId = prop("modrinth_id").toString()
-		//	def embedsDepends = prop("embeds_depends").toString().split(" ")
-		//	def curseForgeProjectId = prop("curseforge_id").toString()
-		//	def requiresDepends = prop("requires_depends").toString().split(" ")
-		//	def optionalDepends = prop("optional_depends").toString().split(" ")
-		//	def incompatibleDepends = prop("incompatible_depends").toString().split(" ")
-		//	def versionTypeProperty = prop("version_type").toString()
-		//	def maxJavaVersion = JavaVersion.toVersion(prop("max_java_version"))
-		//	def isClient = Boolean.parseBoolean(prop("is_for_client)").toString())
-		//	def isTesting = Boolean.parseBoolean(prop("test_publish)").toString())
-		//	def isServer = Boolean.parseBoolean(prop("is_for_server)").toString())
-		//	def versionName = "[${currentMultiVersion.toVersionRange()}] ${prop("mod_name")} v${prop("mod_version")}"
-		//	def bl = providers.environmentVariable("CURSEFORGE_API_KEY").getOrNull() == null
-		//	def bl2 = providers.environmentVariable("MODRINTH_API_KEY").getOrNull() == null
-		//	def bl3 = isTesting || bl || bl2
-
-		String name = "[%s] %s v%s".formatted("TODO MULTI VERSION", project.getProperty("mod_name"), project.getProperty("mod_version"));
+	public static void apply(@NotNull Project project, ModPublishExtension mpe, MossyPlugin mossyPlugin) {
+		MultiVersion projectMultiVersion = mossyPlugin.getProjectMultiVersion();
+		String name = "[%s] %s v%s".formatted(projectMultiVersion.toVersionRange(), project.getProperty("mod_name"), project.getProperty("mod_version"));
 
 		String[] loaders = project.getProperty("loaders").split(" ");
 		String modrinthId = project.getProperty("modrinth_id");
@@ -50,12 +33,13 @@ public class MossyModPublishManager {
 		int maxJavaVersion = Integer.parseInt(project.getProperty("max_java_version"));
 		Boolean isForClient = Boolean.parseBoolean(project.getProperty("is_for_client"));
 		Boolean isForServer = Boolean.parseBoolean(project.getProperty("is_for_server"));
-		Boolean testPublish = Boolean.parseBoolean(project.getProperty("test_publish"));
+		boolean testPublish = Boolean.parseBoolean(project.getProperty("test_publish"));
 
 		String curseForgeApiKey = project.getProviders().environmentVariable("CURSEFORGE_API_KEY").getOrNull();
 		String modrinthApiKey = project.getProviders().environmentVariable("MODRINTH_API_KEY").getOrNull();
 
 		boolean cannotUpload = testPublish || curseForgeApiKey == null || modrinthApiKey == null;
+
 
 		mpe.getDisplayName().set(name);
 		mpe.getFile().set(getModFile(project));
@@ -75,7 +59,14 @@ public class MossyModPublishManager {
 			curseforge.getClientRequired().set(isForClient);
 			curseforge.getServerRequired().set(isForServer);
 
-			// TODO minecraftVersions
+			if (projectMultiVersion.minIsMax()) {
+				curseforge.getMinecraftVersions().add(projectMultiVersion.maxVersion());
+			} else {
+				curseforge.minecraftVersionRange((options) -> {
+					options.getStart().set(projectMultiVersion.minVersion());
+					options.getEnd().set(projectMultiVersion.maxVersion());
+				});
+			}
 
 			if (!dependsEmbeds[0].equals("none")) {
 				curseforge.embeds(dependsEmbeds);
@@ -95,7 +86,14 @@ public class MossyModPublishManager {
 			modrinth.getProjectId().set(modrinthId);
 			modrinth.getAccessToken().set(modrinthApiKey);
 
-			// TODO minecraftVersions
+			if (projectMultiVersion.minIsMax()) {
+				modrinth.getMinecraftVersions().add(projectMultiVersion.maxVersion());
+			} else {
+				modrinth.minecraftVersionRange((options) -> {
+					options.getStart().set(projectMultiVersion.minVersion());
+					options.getEnd().set(projectMultiVersion.maxVersion());
+				});
+			}
 
 			if (!dependsEmbeds[0].equals("none")) {
 				modrinth.embeds(dependsEmbeds);

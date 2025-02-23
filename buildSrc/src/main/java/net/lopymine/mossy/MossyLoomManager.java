@@ -2,10 +2,7 @@ package net.lopymine.mossy;
 
 import lombok.experimental.ExtensionMethod;
 import org.gradle.api.*;
-import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.provider.Provider;
 
-import net.fabricmc.loom.LoomGradleExtension;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 import net.fabricmc.loom.configuration.ide.RunConfigSettings;
 
@@ -22,7 +19,7 @@ public class MossyLoomManager {
 	@SuppressWarnings("UnstableApiUsage")
 	public static void apply(@NotNull Project project, LoomGradleExtensionAPI loom) {
 		String modId = project.getProperty("mod_id");
-		String currentVersion = project.getCurrentVersion();
+		String currentVersion = project.getCurrentMCVersion();
 		File file = project.getRootFile("src/main/resources/aws/%s.accesswidener".formatted(currentVersion));
 
 		// Mixins and AWs
