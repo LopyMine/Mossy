@@ -1,4 +1,4 @@
-package net.lopymine.mossy;
+package net.lopymine.mossy.manager;
 
 import lombok.experimental.ExtensionMethod;
 import me.modmuss50.mpp.*;
@@ -9,6 +9,7 @@ import org.gradle.api.provider.Provider;
 
 import net.fabricmc.loom.task.RemapJarTask;
 
+import net.lopymine.mossy.MossyPlugin;
 import net.lopymine.mossy.multi.MultiVersion;
 
 import java.io.*;
@@ -20,7 +21,7 @@ public class MossyModPublishManager {
 
 	public static void apply(@NotNull Project project, ModPublishExtension mpe, MossyPlugin mossyPlugin) {
 		MultiVersion projectMultiVersion = mossyPlugin.getProjectMultiVersion();
-		String name = "[%s] %s v%s".formatted(projectMultiVersion.toVersionRange(), project.getProperty("mod_name"), project.getProperty("mod_version"));
+		String name = "[%s] %s v%s".formatted(projectMultiVersion.toVersionRange(), project.getProperty("data.mod_name"), project.getProperty("data.mod_version"));
 
 		String[] loaders = project.getProperty("loaders").split(" ");
 		String modrinthId = project.getProperty("modrinth_id");

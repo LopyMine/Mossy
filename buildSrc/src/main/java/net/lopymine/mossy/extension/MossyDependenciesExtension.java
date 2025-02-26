@@ -1,4 +1,4 @@
-package net.lopymine.mossy;
+package net.lopymine.mossy.extension;
 
 import lombok.Getter;
 import org.gradle.api.tasks.Input;
@@ -17,12 +17,6 @@ public class MossyDependenciesExtension {
 
 	@Input
 	String fabricLoader;
-
-	@Input
-	String modMenu;
-
-	@Input
-	String yacl;
 
 	@Input
 	String lombok;

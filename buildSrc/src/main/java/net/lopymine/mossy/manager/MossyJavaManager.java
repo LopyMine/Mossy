@@ -1,10 +1,12 @@
-package net.lopymine.mossy;
+package net.lopymine.mossy.manager;
 
 import lombok.experimental.ExtensionMethod;
 import org.gradle.api.*;
 import org.gradle.api.plugins.*;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.compile.JavaCompile;
+
+import net.lopymine.mossy.MossyPlugin;
 
 import org.jetbrains.annotations.NotNull;
 

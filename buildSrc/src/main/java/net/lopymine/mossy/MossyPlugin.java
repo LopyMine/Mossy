@@ -4,15 +4,18 @@ import dev.kikugie.stonecutter.*;
 import lombok.Getter;
 import me.modmuss50.mpp.ModPublishExtension;
 import org.gradle.api.*;
-import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.plugins.*;
+import org.gradle.jvm.tasks.Jar;
 
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 
+import net.lopymine.mossy.manager.*;
 import net.lopymine.mossy.multi.MultiVersion;
 import net.lopymine.mossy.tasks.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
@@ -22,6 +25,7 @@ public class MossyPlugin implements Plugin<Project> {
 	private int javaVersionIndex;
 	private JavaVersion javaVersion;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void apply(@NotNull Project project) {
 		PluginContainer plugins = project.getPlugins();
@@ -32,9 +36,17 @@ public class MossyPlugin implements Plugin<Project> {
 		this.javaVersionIndex = getJavaVersion(project);
 		this.javaVersion = JavaVersion.toVersion(this.javaVersionIndex);
 
+		project.setVersion(this.getMossyVersion(project));
+		project.setGroup(getProperty(project, "data.mod_maven_group"));
+		BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
+		base.setArchivesBaseName(getProperty(project, "data.mod_name"));
+		Jar jar = (Jar) project.getTasks().getByName("jar");
+		jar.from("LICENSE").rename((s) -> "%s_%s".formatted(s, base.getArchivesName()));
+
 		MossyDependenciesManager.apply(project);
 		MossyJavaManager.apply(project, this);
 		MossyStonecutterManager.apply(project);
+		MossyProcessResourcesManager.apply(project);
 
 		project.getExtensions().configure(LoomGradleExtensionAPI.class, (loom) -> {
 			MossyLoomManager.apply(project, loom);
@@ -127,6 +139,22 @@ public class MossyPlugin implements Plugin<Project> {
 		return properties;
 	}
 
+	public static Map<String, String> getMossyProperties(Project project, String prefix) {
+		HashMap<String, String> dependencies = new HashMap<>();
+
+		Map<String, ?> properties = project.getProperties();
+		for (Entry<String, ?> entry : properties.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			if (!key.startsWith(prefix + ".")) {
+				continue;
+			}
+			dependencies.put(substringSince(key, "."), value.toString());
+		}
+
+		return dependencies;
+	}
+
 	public static String getCurrentMCVersion(@NotNull Project project) {
 		return getStonecutter(project).getCurrent().getProject();
 	}
@@ -145,6 +173,20 @@ public class MossyPlugin implements Plugin<Project> {
 
 	public static String[] getMultiVersions(@NotNull Project project) {
 		return getProperty(project, "multi_versions").split(" ");
+	}
+
+	public static String substringSince(String value, String since) {
+		int i = value.indexOf(since);
+		if (i == -1) {
+			return value;
+		}
+		return value.substring(i + 1);
+	}
+
+	public String getMossyVersion(Project project) {
+		String modVersion = getProperty(project, "data.mod_version");
+		MultiVersion multiVersion = this.getProjectMultiVersion();
+		return "%s+%s".formatted(modVersion, multiVersion.projectVersion());
 	}
 
 	public static File getRootFile(@NotNull Project project, String path) {

@@ -2,92 +2,42 @@ plugins {
 	id("net.lopymine.mossy-plugin")
 }
 
-def modId = prop("mod_id")
-def modName = prop("mod_name")
-def modVersion = prop("mod_version")
-def modGroup = prop("mod_group")
-def modMavenGroup = prop("mod_maven_group")
-def modDescription = prop("mod_description")
-def modAuthors = prop("mod_authors")
-def modLicense = prop("mod_license")
-def lombokVersion = prop("lombok_version")
-
-def mcVersion = stonecutter.current.version.toString() // Current MC version from "./versions/" folder
-
-version = "TODO"
-group = modMavenGroup
-
-base {
-	archivesName = modName
-}
-
 mossyDependencies {
-	minecraft = "1.20.1"
-	mappings = "TODO"
-	lombok = "TODO"
-	fabricApi = "TODO1"
-	fabricLoader = "TODO"
-	modMenu = "TODO"
+	minecraft = stonecutter.current.version.toString()
+	mappings = prop("build.yarn")
+	lombok = prop("base.lombok_version")
+	fabricApi = prop("build.fabric_api")
+	fabricLoader = prop("build.fabric_loader")
 }
 
-dependencies {
-//	// Lombok
-//	compileOnly "org.projectlombok:lombok:${lombokVersion}"
-//	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-	// YACL
-	def minecraftVersionsWithOldYACLMaven = Set.of("1.19.4", "1.20", "1.20.2", "1.20.3")
-	def yaclVersion = prop("dep.yacl")
-	if (minecraftVersionsWithOldYACLMaven.contains(mcVersion)) {
-		modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:${substringBefore(yaclVersion.toString(), "-")}"
-	} else {
-		modImplementation "dev.isxander:yet-another-config-lib:${yaclVersion}"
-	}
-}
-
-processResources {
-	def props = [:]
-	props.put("mod_id", modId.toString())
-	props.put("mod_authors", modAuthors.toString())
-	props.put("mod_group", modGroup)
-	props.put("mod_description", modDescription.toString())
-	props.put("mod_name", modName.toString())
-	props.put("mod_license", modLicense.toString())
-	props.put("version", version.toString())
-	props.put("fabric_loader", prop("build.fabric_loader").toString())
-	props.put("minecraft", mcVersion.toString())
-	props.put("java", 21)
-	props.put("fabric_api_id", stonecutter.compare("1.19.1", mcVersion) >= 0 ? "fabric" : "fabric-api")
-
-	props.each { key, value ->
-		inputs.property key, value
-	}
-
-	filesMatching(["*.json", "*.json5", "assets/${modId}/lang/*.json".toString()]) {
-		expand(props)
-	}
-
-	filesMatching("aws/*.accesswidener") {
-		if (!it.getName().startsWith(mcVersion)) {
-			it.exclude()
-		}
-	}
-
-	filesMatching("mixins/*.mixins.json") {
-		def name = substringBefore(it.getName(), "-")
-		if (name != mcVersion) {
-			it.exclude()
-		} else {
-			expand(props)
-		}
-	}
-}
-
-jar {
-	from("LICENSE") {
-		rename { "${it}_${project.base.archivesName.get()}" }
-	}
-}
+//processResources {
+//	def props = [:]
+//	props.put("mod_id", modId.toString())
+//	props.put("mod_authors", modAuthors.toString())
+//	props.put("mod_group", modGroup)
+//	props.put("mod_description", modDescription.toString())
+//	props.put("mod_name", modName.toString())
+//	props.put("mod_license", modLicense.toString())
+//	props.put("version", version.toString())
+//	props.put("fabric_loader", prop("build.fabric_loader").toString())
+//	props.put("minecraft", mcVersion.toString())
+//	props.put("java", 21)
+//	props.put("fabric_api_id", stonecutter.compare("1.19.1", mcVersion) >= 0 ? "fabric" : "fabric-api")
+//
+//	props.each { key, value ->
+//		inputs.property key, value
+//	}
+//
+//	filesMatching(["*.json", "*.json5", "assets/${modId}/lang/*.json".toString()]) {
+//		expand(props)
+//	}
+//
+//	filesMatching("aws/*.accesswidener") {
+//		if (!it.getName().startsWith(mcVersion)) {
+//			it.exclude()
+//		}
+//	}
+//}
 
 String prop(String key) {
 	return findProperty(key).toString()

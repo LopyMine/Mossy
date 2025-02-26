@@ -12,10 +12,14 @@ public class RebuildLibsTask extends Delete {
 	@TaskAction
 	public void regenerate() {
 		Project project = this.getProject();
-		String modName = project.getProperty("mod_name");
-		String modVersion = project.getProperty("mod_version");
-		delete(project.getRootFile("libs/%s-%s.jar".formatted(modName, modVersion)));
-		delete(project.getLayout().getBuildDirectory().file("%s-%s.jar".formatted(modName, modVersion)));
-		delete(project.getLayout().getBuildDirectory().file("%s-%s-sources.jar".formatted(modName, modVersion)));
+		String modName = project.getProperty("data.mod_name");
+		String version = project.getVersion().toString();
+
+		String file = "%s-%s.jar".formatted(modName, version);
+		String sourcesFile = "%s-%s-sources.jar".formatted(modName, version);
+
+		delete(project.getRootFile("libs/%s".formatted(file)));
+		delete(project.getLayout().getBuildDirectory().file(file));
+		delete(project.getLayout().getBuildDirectory().file(sourcesFile));
 	}
 }
