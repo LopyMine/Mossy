@@ -19,9 +19,9 @@ public class MossyLoomManager {
 	private static final Pattern PLAYER_NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{2,16}$");
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static void apply(@NotNull Project project, LoomGradleExtensionAPI loom) {
+	public static void apply(@NotNull Project project, MossyPlugin plugin, LoomGradleExtensionAPI loom) {
 		String modId = project.getProperty("data.mod_id");
-		String currentVersion = project.getCurrentMCVersion();
+		String currentVersion = plugin.getProjectMultiVersion().projectVersion();
 		File file = project.getRootFile("src/main/resources/aws/%s.accesswidener".formatted(currentVersion));
 
 		// Mixins and AWs

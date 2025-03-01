@@ -1,6 +1,6 @@
 package net.lopymine.mossy.manager;
 
-import dev.kikugie.stonecutter.StonecutterBuild;
+import dev.kikugie.stonecutter.*;
 import lombok.experimental.ExtensionMethod;
 import org.gradle.api.Project;
 

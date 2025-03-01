@@ -21,41 +21,58 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class MossyPlugin implements Plugin<Project> {
 
+	public static final MossyLogger LOGGER = new MossyLogger();
+
 	private MultiVersion projectMultiVersion;
 	private int javaVersionIndex;
 	private JavaVersion javaVersion;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void apply(@NotNull Project project) {
+		LOGGER.setup(project);
+
+		//
+
 		PluginContainer plugins = project.getPlugins();
 		plugins.apply("fabric-loom");
 		plugins.apply("me.modmuss50.mod-publish-plugin");
 
-		this.projectMultiVersion = getProjectMultiVersion(project);
-		this.javaVersionIndex = getJavaVersion(project);
+		//
+
+		this.projectMultiVersion = MossyPlugin.getProjectMultiVersion(project);
+		this.javaVersionIndex = MossyPlugin.getJavaVersion(project);
 		this.javaVersion = JavaVersion.toVersion(this.javaVersionIndex);
 
-		project.setVersion(this.getMossyVersion(project));
-		project.setGroup(getProperty(project, "data.mod_maven_group"));
-		BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
-		base.setArchivesBaseName(getProperty(project, "data.mod_name"));
-		Jar jar = (Jar) project.getTasks().getByName("jar");
-		jar.from("LICENSE").rename((s) -> "%s_%s".formatted(s, base.getArchivesName()));
+		//
+
+		MossyPlugin.configureProject(project, this);
+
+		MossyJavaManager.apply(project,this);
+		MossyProcessResourcesManager.apply(project, this);
 
 		MossyDependenciesManager.apply(project);
-		MossyJavaManager.apply(project, this);
 		MossyStonecutterManager.apply(project);
-		MossyProcessResourcesManager.apply(project);
 
+		//
+
+		MossyPlugin.configureExtensions(project, this);
+		MossyPlugin.configureTasks(project);
+
+		LOGGER.log("Java Version: %s", this.javaVersionIndex);
+		LOGGER.log("Project Version: %s", project.getVersion());
+	}
+
+	private static void configureExtensions(@NotNull Project project, MossyPlugin plugin) {
 		project.getExtensions().configure(LoomGradleExtensionAPI.class, (loom) -> {
-			MossyLoomManager.apply(project, loom);
+			MossyLoomManager.apply(project, plugin, loom);
 		});
 
 		project.getExtensions().configure(ModPublishExtension.class, (mpe) -> {
-			MossyModPublishManager.apply(project, mpe, this);
+			MossyModPublishManager.apply(project, plugin, mpe);
 		});
+	}
 
+	private static void configureTasks(@NotNull Project project) {
 		project.getTasks().register("generatePublishWorkflowsForEachVersion", GeneratePublishWorkflowsForEachVersionTask.class, (task) -> {
 			task.setGroup("mossy");
 		});
@@ -74,6 +91,20 @@ public class MossyPlugin implements Plugin<Project> {
 			task.setGroup("build");
 			task.finalizedBy("build");
 		});
+	}
+
+	@SuppressWarnings("deprecation")
+	private static void configureProject(@NotNull Project project, MossyPlugin plugin) {
+		String projectVersion = plugin.getMossyProjectVersion(project);
+		String mavenGroup = getProperty(project, "data.mod_maven_group");
+		project.setVersion(projectVersion);
+		project.setGroup(mavenGroup);
+
+		BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
+		base.setArchivesBaseName(getProperty(project, "data.mod_name"));
+
+		Jar jar = (Jar) project.getTasks().getByName("jar");
+		jar.from("LICENSE").rename((s) -> "%s_%s".formatted(s, base.getArchivesName()));
 	}
 
 	public static int getJavaVersion(Project project) {
@@ -175,6 +206,14 @@ public class MossyPlugin implements Plugin<Project> {
 		return getProperty(project, "multi_versions").split(" ");
 	}
 
+	public static String substringBefore(String value, String since) {
+		int i = value.indexOf(since);
+		if (i == -1) {
+			return value;
+		}
+		return value.substring(0, i);
+	}
+
 	public static String substringSince(String value, String since) {
 		int i = value.indexOf(since);
 		if (i == -1) {
@@ -183,7 +222,7 @@ public class MossyPlugin implements Plugin<Project> {
 		return value.substring(i + 1);
 	}
 
-	public String getMossyVersion(Project project) {
+	public String getMossyProjectVersion(Project project) {
 		String modVersion = getProperty(project, "data.mod_version");
 		MultiVersion multiVersion = this.getProjectMultiVersion();
 		return "%s+%s".formatted(modVersion, multiVersion.projectVersion());

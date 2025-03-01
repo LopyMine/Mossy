@@ -3,7 +3,8 @@ plugins {
 	id 'java-gradle-plugin'
 }
 
-def pluginId = property("plugin_id").toString()
+def mainModuleId = property("main_module_id").toString()
+def stonecutterModuleId = property("stonecutter_module_id").toString()
 def pluginMavenPackage = property("plugin_maven_package").toString()
 def pluginPackage = property("plugin_package").toString()
 def pluginClass = property("plugin_class").toString()
@@ -45,9 +46,13 @@ test {
 
 gradlePlugin {
 	plugins {
-		create(pluginId) {
-			id                  = "${pluginMavenPackage}.${pluginId}"
+		create(mainModuleId) {
+			id                  = "${pluginMavenPackage}.${mainModuleId}"
 			implementationClass = "${pluginPackage}.${pluginClass}"
+		}
+		create(stonecutterModuleId) {
+			id                  = "${pluginMavenPackage}.${stonecutterModuleId}"
+			implementationClass = "${pluginPackage}.${pluginClass}Stonecutter"
 		}
 	}
 }

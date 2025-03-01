@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @ExtensionMethod(MossyPlugin.class)
 public class MossyModPublishManager {
 
-	public static void apply(@NotNull Project project, ModPublishExtension mpe, MossyPlugin mossyPlugin) {
+	public static void apply(@NotNull Project project, MossyPlugin mossyPlugin, ModPublishExtension mpe) {
 		MultiVersion projectMultiVersion = mossyPlugin.getProjectMultiVersion();
 		String name = "[%s] %s v%s".formatted(projectMultiVersion.toVersionRange(), project.getProperty("data.mod_name"), project.getProperty("data.mod_version"));
 
@@ -40,7 +40,6 @@ public class MossyModPublishManager {
 		String modrinthApiKey = project.getProviders().environmentVariable("MODRINTH_API_KEY").getOrNull();
 
 		boolean cannotUpload = testPublish || curseForgeApiKey == null || modrinthApiKey == null;
-
 
 		mpe.getDisplayName().set(name);
 		mpe.getFile().set(getModFile(project));
@@ -134,8 +133,7 @@ public class MossyModPublishManager {
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("Failed to get changelog text!");
-			throw new RuntimeException(e);
+			throw new RuntimeException("Failed to read changelog:", e);
 		}
 		return "No changelog specified.";
 	}

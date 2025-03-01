@@ -8,7 +8,7 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import net.lopymine.mossy.*;
 import net.lopymine.mossy.extension.MossyDependenciesExtension;
 
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,9 +30,16 @@ public class MossyDependenciesManager {
 		dependencies.add("compileOnly", "org.projectlombok:lombok:%s".formatted(lombok));
 		dependencies.add("annotationProcessor", "org.projectlombok:lombok:%s".formatted(lombok));
 
-		for (Entry<String, String> entry : project.getMossyProperties("dep").entrySet()) {
-			dependencies.add("modImplementation", "maven.modrinth:%s:%s".formatted(entry.getKey(), entry.getValue()));
+		Map<String, String> properties = project.getMossyProperties("dep");
+		String yacl = properties.remove("yacl");
+
+		if (yacl != null) {
+			dependencies.add("modImplementation", "dev.isxander:yet-another-config-lib:%s".formatted(yacl));
 		}
+
+		properties.forEach((key, value) -> {
+			dependencies.add("modImplementation", "maven.modrinth:%s:%s".formatted(key, value));
+		});
 	}
 
 	private static void addRepositories(Project project) {

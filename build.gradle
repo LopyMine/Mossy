@@ -10,34 +10,9 @@ mossyDependencies {
 	fabricLoader = prop("build.fabric_loader")
 }
 
-//processResources {
-//	def props = [:]
-//	props.put("mod_id", modId.toString())
-//	props.put("mod_authors", modAuthors.toString())
-//	props.put("mod_group", modGroup)
-//	props.put("mod_description", modDescription.toString())
-//	props.put("mod_name", modName.toString())
-//	props.put("mod_license", modLicense.toString())
-//	props.put("version", version.toString())
-//	props.put("fabric_loader", prop("build.fabric_loader").toString())
-//	props.put("minecraft", mcVersion.toString())
-//	props.put("java", 21)
-//	props.put("fabric_api_id", stonecutter.compare("1.19.1", mcVersion) >= 0 ? "fabric" : "fabric-api")
-//
-//	props.each { key, value ->
-//		inputs.property key, value
-//	}
-//
-//	filesMatching(["*.json", "*.json5", "assets/${modId}/lang/*.json".toString()]) {
-//		expand(props)
-//	}
-//
-//	filesMatching("aws/*.accesswidener") {
-//		if (!it.getName().startsWith(mcVersion)) {
-//			it.exclude()
-//		}
-//	}
-//}
+mossyResources {
+	//expandFiles = ["custom", "file", "patterns", "here"]
+}
 
 String prop(String key) {
 	return findProperty(key).toString()
