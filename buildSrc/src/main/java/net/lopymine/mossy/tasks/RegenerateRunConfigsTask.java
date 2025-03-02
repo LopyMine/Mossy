@@ -14,6 +14,6 @@ public class RegenerateRunConfigsTask extends Delete {
 	@TaskAction
 	public void regenerate() {
 		Project project = this.getProject();
-		delete(project.file(".idea/runConfigurations"));
+		delete(project.getRootFile(".idea/runConfigurations"));
 	}
 }

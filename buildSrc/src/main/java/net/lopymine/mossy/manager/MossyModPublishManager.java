@@ -108,6 +108,9 @@ public class MossyModPublishManager {
 				modrinth.incompatible(dependsIncompatible);
 			}
 		});
+
+		MossyPlugin.LOGGER.logModule("MPP","Configuring \"%s\"", mpe.getDisplayName().get());
+		MossyPlugin.LOGGER.logModule("MPP","Dry Run: %s", mpe.getDryRun().get());
 	}
 
 	private static Provider<RegularFile> getModFile(@NotNull Project project) {

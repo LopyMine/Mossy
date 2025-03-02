@@ -15,4 +15,9 @@ public class MossyLogger {
 		System.out.println("[Mossy/%s] %s".formatted(this.project.getName(), text.formatted(objects)));
 	}
 
+	@SuppressWarnings("all")
+	public void logModule(String module, String text, Object... objects) {
+		System.out.println("[Mossy/%s/%s] %s".formatted(this.project.getName(), module, text.formatted(objects)));
+	}
+
 }

@@ -5,9 +5,11 @@ import lombok.Getter;
 import me.modmuss50.mpp.ModPublishExtension;
 import org.gradle.api.*;
 import org.gradle.api.plugins.*;
+import org.gradle.api.tasks.*;
 import org.gradle.jvm.tasks.Jar;
 
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
+import net.fabricmc.loom.task.RemapJarTask;
 
 import net.lopymine.mossy.manager.*;
 import net.lopymine.mossy.multi.MultiVersion;
@@ -58,8 +60,8 @@ public class MossyPlugin implements Plugin<Project> {
 		MossyPlugin.configureExtensions(project, this);
 		MossyPlugin.configureTasks(project);
 
-		LOGGER.log("Java Version: %s", this.javaVersionIndex);
 		LOGGER.log("Project Version: %s", project.getVersion());
+		LOGGER.log("Java Version: %s", this.javaVersionIndex);
 	}
 
 	private static void configureExtensions(@NotNull Project project, MossyPlugin plugin) {
@@ -83,17 +85,29 @@ public class MossyPlugin implements Plugin<Project> {
 			task.setGroup("mossy");
 			task.finalizedBy("ideaSyncTask");
 		});
-		project.getTasks().register("buildAndCollect", BuildAndCollectTask.class, (task) -> {
+		project.getTasks().register("rebuildLibs", Delete.class, task -> {
 			task.setGroup("build");
-			task.dependsOn("rebuildLibs");
+			String modName = getProperty(project, "data.mod_name");
+			String version = project.getVersion().toString();
+
+			String jarFileName = "libs/%s-%s.jar".formatted(modName, version);
+			String sourcesJarFileName = "libs/%s-%s-sources.jar".formatted(modName, version);
+
+			task.delete(getRootFile(project, jarFileName));
+			task.delete(project.getLayout().getBuildDirectory().file(jarFileName));
+			task.delete(project.getLayout().getBuildDirectory().file(sourcesJarFileName));
 		});
-		project.getTasks().register("rebuildLibs", RebuildLibsTask.class, (task) -> {
+		project.getTasks().named("build", task -> {
+			task.mustRunAfter("rebuildLibs");
+		});
+		project.getTasks().register("buildAndCollect", Copy.class, task -> {
 			task.setGroup("build");
-			task.finalizedBy("build");
+			task.dependsOn("rebuildLibs", "build");
+			task.from(((RemapJarTask) project.getTasks().getByName("remapJar")).getArchiveFile().get());
+			task.into(getRootFile(project, "libs/"));
 		});
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void configureProject(@NotNull Project project, MossyPlugin plugin) {
 		String projectVersion = plugin.getMossyProjectVersion(project);
 		String mavenGroup = getProperty(project, "data.mod_maven_group");
@@ -101,10 +115,12 @@ public class MossyPlugin implements Plugin<Project> {
 		project.setGroup(mavenGroup);
 
 		BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
-		base.setArchivesBaseName(getProperty(project, "data.mod_name"));
+		base.getArchivesName().set(getProperty(project, "data.mod_name"));
 
 		Jar jar = (Jar) project.getTasks().getByName("jar");
-		jar.from("LICENSE").rename((s) -> "%s_%s".formatted(s, base.getArchivesName()));
+		jar.from(getRootFile(project, "LICENSE"), (spec) -> {
+			spec.rename(s -> "%s_%s".formatted(s, base.getArchivesName().get()));
+		});
 	}
 
 	public static int getJavaVersion(Project project) {

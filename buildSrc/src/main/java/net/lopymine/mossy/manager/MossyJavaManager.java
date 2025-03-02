@@ -23,7 +23,6 @@ public class MossyJavaManager {
 		}
 
 		JavaPluginExtension javaExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-		javaExtension.withSourcesJar();
 		javaExtension.setSourceCompatibility(javaVersion);
 		javaExtension.setTargetCompatibility(javaVersion);
 	}
