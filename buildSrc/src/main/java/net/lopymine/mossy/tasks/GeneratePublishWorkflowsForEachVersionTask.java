@@ -15,7 +15,7 @@ public class GeneratePublishWorkflowsForEachVersionTask extends DefaultTask {
 	@TaskAction
 	public void generate() {
 		Project project = this.getProject();
-		File file = project.getRootFile(".github/workflows/generated/");
+		File file = project.getRootFile(".github/workflows/");
 		if (!file.exists() && !file.mkdirs()) {
 			return;
 		}
