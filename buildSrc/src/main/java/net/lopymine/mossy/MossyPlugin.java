@@ -222,6 +222,13 @@ public class MossyPlugin implements Plugin<Project> {
 		return getProperty(project, "multi_versions").split(" ");
 	}
 
+	public static List<String> getPublicationVersions(@NotNull Project project) {
+		return Arrays.stream(getProperty(project, "publication_versions")
+				.split(" "))
+				.map((version) -> substringBefore(version, "["))
+				.toList();
+	}
+
 	public static String substringBefore(String value, String since) {
 		int i = value.indexOf(since);
 		if (i == -1) {
