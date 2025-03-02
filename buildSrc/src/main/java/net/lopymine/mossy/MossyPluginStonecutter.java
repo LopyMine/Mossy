@@ -15,7 +15,7 @@ public class MossyPluginStonecutter implements Plugin<Project> {
 	@Override
 	public void apply(@NotNull Project project) {
 		StonecutterController controller = project.getExtensions().getByType(StonecutterController.class);
-		BiConsumer<String, Consumer<ChiseledTask>> registerConsumer = getRegisterConsumer(project, controller);
+		BiConsumer<String, Consumer<ChiseledTask>> registerConsumer = MossyPluginStonecutter.getRegisterConsumer(project, controller);
 
 		registerConsumer.accept("chiseledBuildAndCollectAll", (chiseledTask) -> {
 			chiseledTask.setGroup("mossy-build");
