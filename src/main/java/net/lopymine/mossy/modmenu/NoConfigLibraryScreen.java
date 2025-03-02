@@ -6,10 +6,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Util;
-
 import net.lopymine.mossy.client.MossyClient;
 import net.lopymine.mossy.utils.ModMenuUtils;
-
 import java.net.*;
 import java.util.*;
 import org.jetbrains.annotations.*;
@@ -18,13 +16,14 @@ public class NoConfigLibraryScreen {
 
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
 	private static final String YACL_MODRINTH_LINK = "https://modrinth.com/mod/yacl/versions?l=fabric&g=";
+
 	private NoConfigLibraryScreen() {
 		throw new IllegalStateException("Screen class, use createScreen(...) method!");
 	}
 
 	@Contract("_ -> new")
 	public static @NotNull Screen createScreen(Screen parent) {
-		return new ConfirmScreen((open) -> NoConfigLibraryScreen.onConfirm(open, parent), ModMenuUtils.getModTitle(), ModMenuUtils.getNoConfigScreenMessage(), ScreenTexts.YES, ScreenTexts.BACK);
+		return new ConfirmScreen((open) -> NoConfigLibraryScreen.onConfirm(open, parent), ModMenuUtils.getModTitle(), ModMenuUtils.getNoConfigScreenMessage(), ScreenTexts.CONTINUE, ScreenTexts.BACK);
 	}
 
 	private static void onConfirm(boolean open, Screen parent) {
@@ -46,5 +45,9 @@ public class NoConfigLibraryScreen {
 		} else {
 			MinecraftClient.getInstance().setScreen(parent);
 		}
+	}
+
+	public static Screen createScreenAboutOldVersion(Screen parent, String version) {
+		return new ConfirmScreen((open) -> NoConfigLibraryScreen.onConfirm(open, parent), ModMenuUtils.getModTitle(), ModMenuUtils.getOldConfigScreenMessage(version), ScreenTexts.CONTINUE, ScreenTexts.BACK);
 	}
 }

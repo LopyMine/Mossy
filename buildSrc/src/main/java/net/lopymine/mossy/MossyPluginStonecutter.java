@@ -2,10 +2,13 @@ package net.lopymine.mossy;
 
 import dev.kikugie.stonecutter.*;
 import lombok.experimental.ExtensionMethod;
+import org.gradle.*;
 import org.gradle.api.*;
+import org.gradle.api.initialization.Settings;
+import org.gradle.api.invocation.Gradle;
 import org.gradle.api.tasks.TaskContainer;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,6 +54,33 @@ public class MossyPluginStonecutter implements Plugin<Project> {
 				chiseledTask.getVersions().set(List.of(version));
 			});
 		}
+
+		project.getGradle().addBuildListener(new BuildListener() {
+			@Override
+			public void settingsEvaluated(@NotNull Settings settings) {
+
+			}
+
+			@Override
+			public void projectsLoaded(@NotNull Gradle gradle) {
+
+			}
+
+			@Override
+			public void projectsEvaluated(@NotNull Gradle gradle) {
+				for (Task task : project.getTasks()) {
+					if (!"stonecutter".equals(task.getGroup())) {
+						continue;
+					}
+					task.setGroup("mossy-stonecutter");
+				}
+			}
+
+			@Override
+			public void buildFinished(@NotNull BuildResult result) {
+
+			}
+		});
 	}
 
 	private static BiConsumer<String, Consumer<ChiseledTask>> getRegisterConsumer(@NotNull Project project, StonecutterController controller) {

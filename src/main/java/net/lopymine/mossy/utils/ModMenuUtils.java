@@ -4,38 +4,34 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import net.lopymine.mossy.Mossy;
-import net.lopymine.mossy.modmenu.yacl.simple.SimpleContent;
+import net.lopymine.mossy.yacl.utils.SimpleContent;
 
 import java.util.function.Function;
 
 public class ModMenuUtils {
 
-	private ModMenuUtils() {
-		throw new IllegalStateException("Utility class");
-	}
-
 	public static String getOptionKey(String optionId) {
-		return String.format("%s.modmenu.option.%s", Mossy.MOD_ID, optionId);
+		return String.format("modmenu.option.%s", optionId);
 	}
 
 	public static String getCategoryKey(String categoryId) {
-		return String.format("%s.modmenu.category.%s", Mossy.MOD_ID, categoryId);
+		return String.format("modmenu.category.%s", categoryId);
 	}
 
 	public static String getGroupKey(String groupId) {
-		return String.format("%s.modmenu.group.%s", Mossy.MOD_ID, groupId);
+		return String.format("modmenu.group.%s", groupId);
 	}
 
 	public static Text getName(String key) {
-		return Text.translatable(key + ".name");
+		return Mossy.text(key + ".name");
 	}
 
 	public static Text getDescription(String key) {
-		return Text.translatable(key + ".description");
+		return Mossy.text(key + ".description");
 	}
 
-	public static Identifier getContentId(SimpleContent content, String optionId) {
-		return Mossy.id(String.format("textures/config/%s.%s", optionId, content.getExt()));
+	public static Identifier getContentId(SimpleContent content, String contentId) {
+		return Mossy.id(String.format("textures/config/%s.%s", contentId, content.getFileExtension()));
 	}
 
 	public static Text getModTitle() {
@@ -48,5 +44,9 @@ public class ModMenuUtils {
 
 	public static Text getNoConfigScreenMessage() {
 		return Mossy.text("modmenu.no_config_library_screen.message");
+	}
+
+	public static Text getOldConfigScreenMessage(String version) {
+		return Mossy.text("modmenu.old_config_library_screen.message", version, Mossy.YACL_DEPEND_VERSION);
 	}
 }

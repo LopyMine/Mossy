@@ -16,13 +16,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
 
+import static net.lopymine.mossy.utils.CodecUtils.option;
+import static net.lopymine.mossy.utils.CodecUtils.optional;
+
 @Getter
 @Setter
+@AllArgsConstructor
 public class MossyConfig {
 
 	public static final Codec<MossyConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.BOOL.fieldOf("mossy").forGetter(MossyConfig::isMossy),
-			Codec.FLOAT.fieldOf("secret").forGetter(MossyConfig::getSecret)
+			option("mossy", Codec.BOOL, MossyConfig::isMossy),
+			optional("secret", 0.0F, Codec.FLOAT, MossyConfig::getSecret)
 	).apply(instance, MossyConfig::new));
 
 	private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(Mossy.MOD_ID + ".json5").toFile();
@@ -34,11 +38,6 @@ public class MossyConfig {
 	public MossyConfig() {
 		this.mossy  = false;
 		this.secret = 0.0F;
-	}
-
-	public MossyConfig(boolean mossy, float secret) {
-		this.mossy  = mossy;
-		this.secret = secret;
 	}
 
 	public static MossyConfig getInstance() {

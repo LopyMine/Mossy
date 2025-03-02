@@ -1,4 +1,4 @@
-package net.lopymine.mossy.modmenu.yacl.simple;
+package net.lopymine.mossy.yacl.screen;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.YetAnotherConfigLib.Builder;
@@ -9,12 +9,13 @@ import net.lopymine.mossy.utils.ModMenuUtils;
 
 import java.util.function.Consumer;
 
-public class SimpleYACLScreenBuilder {
+@SuppressWarnings("unused")
+public class SimpleYACLScreen {
 
 	private final Builder builder;
 	private final Screen parent;
 
-	public SimpleYACLScreenBuilder(Screen parent, Runnable onSave, Consumer<YACLScreen> onInit) {
+	public SimpleYACLScreen(Screen parent, Runnable onSave, Consumer<YACLScreen> onInit) {
 		this.builder = YetAnotherConfigLib.createBuilder()
 				.title(ModMenuUtils.getModTitle())
 				.save(onSave)
@@ -22,15 +23,15 @@ public class SimpleYACLScreenBuilder {
 		this.parent  = parent;
 	}
 
-	public static SimpleYACLScreenBuilder startBuilder(Screen parent, Runnable onSave) {
-		return new SimpleYACLScreenBuilder(parent, onSave, (yaclScreen) -> {});
+	public static SimpleYACLScreen startBuilder(Screen parent, Runnable onSave) {
+		return new SimpleYACLScreen(parent, onSave, (yaclScreen) -> {});
 	}
 
-	public static SimpleYACLScreenBuilder startBuilder(Screen parent, Runnable onSave, Consumer<YACLScreen> onInit) {
-		return new SimpleYACLScreenBuilder(parent, onSave, onInit);
+	public static SimpleYACLScreen startBuilder(Screen parent, Runnable onSave, Consumer<YACLScreen> onInit) {
+		return new SimpleYACLScreen(parent, onSave, onInit);
 	}
 
-	public SimpleYACLScreenBuilder categories(ConfigCategory... categories) {
+	public SimpleYACLScreen categories(ConfigCategory... categories) {
 		for (ConfigCategory category : categories) {
 			if (category == null) {
 				continue;

@@ -17,6 +17,7 @@ public class MossyStonecutterManager {
 		addSwap(stonecutter, project, "data.mod_version");
 		addSwap(stonecutter, project, "data.mod_id");
 		addSwap(stonecutter, project, "data.mod_name");
+		addSwap(stonecutter, project, "dep.yacl");
 	}
 
 	private static void addSwap(StonecutterBuild stonecutter, @NotNull Project project, String propertyId) {
