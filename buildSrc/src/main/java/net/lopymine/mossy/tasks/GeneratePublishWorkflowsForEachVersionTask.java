@@ -22,7 +22,7 @@ public class GeneratePublishWorkflowsForEachVersionTask extends DefaultTask {
 		String[] multiVersions = project.getMultiVersions();
 		for (String multiVersion : multiVersions) {
 			try {
-				File workflowFile = file.toPath().resolve("publish_%s_.yml".formatted(multiVersion)).toFile();
+				File workflowFile = file.toPath().resolve("publish_%s.yml".formatted(multiVersion)).toFile();
 				if (workflowFile.exists()) {
 					continue;
 				}
