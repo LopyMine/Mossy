@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class DrawUtils {
 
 	public static void drawTexture(DrawContext context, Identifier sprite, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
