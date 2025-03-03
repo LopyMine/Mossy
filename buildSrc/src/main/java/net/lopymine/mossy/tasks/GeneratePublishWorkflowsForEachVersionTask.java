@@ -51,8 +51,8 @@ public class GeneratePublishWorkflowsForEachVersionTask extends DefaultTask {
 						      - name: Publish MULTI_VERSION_ID Mod Version
 						        run: ./gradlew chiseledBuildAndCollect+MULTI_VERSION_ID chiseledPublish+MULTI_VERSION_ID
 						        env:
-						          CURSEFORGE_API_KEY: {{ secrets.CURSEFORGE_API_KEY }}
-						          MODRINTH_API_KEY: {{ secrets.MODRINTH_API_KEY }}
+						          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+						          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
 						""".replaceAll("MULTI_VERSION_ID", multiVersion).stripIndent().strip();
 				Files.write(workflowFile.toPath(), strip.getBytes());
 			} catch (Exception ignored) {
