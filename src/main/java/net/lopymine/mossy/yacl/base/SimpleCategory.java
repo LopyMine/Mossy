@@ -1,4 +1,4 @@
-package net.lopymine.mossy.modmenu.yacl.simple;
+package net.lopymine.mossy.yacl.base;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.ConfigCategory.Builder;
@@ -6,21 +6,22 @@ import net.minecraft.text.Text;
 
 import net.lopymine.mossy.utils.ModMenuUtils;
 
-public class SimpleCategoryBuilder {
+@SuppressWarnings("unused")
+public class SimpleCategory {
 
 	private final Builder builder;
 
-	private SimpleCategoryBuilder(String categoryId) {
+	private SimpleCategory(String categoryId) {
 		String categoryKey = ModMenuUtils.getCategoryKey(categoryId);
 		Text categoryName = ModMenuUtils.getName(categoryKey);
 		this.builder = ConfigCategory.createBuilder().name(categoryName);
 	}
 
-	public static SimpleCategoryBuilder startBuilder(String categoryId) {
-		return new SimpleCategoryBuilder(categoryId);
+	public static SimpleCategory startBuilder(String categoryId) {
+		return new SimpleCategory(categoryId);
 	}
 
-	public SimpleCategoryBuilder groups(OptionGroup... groups) {
+	public SimpleCategory groups(OptionGroup... groups) {
 		for (OptionGroup group : groups) {
 			if (group == null) {
 				continue;
@@ -30,7 +31,7 @@ public class SimpleCategoryBuilder {
 		return this;
 	}
 
-	public SimpleCategoryBuilder options(Option<?>... options) {
+	public SimpleCategory options(Option<?>... options) {
 		for (Option<?> option : options) {
 			if (option == null) {
 				continue;

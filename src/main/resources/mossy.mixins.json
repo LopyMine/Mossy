@@ -4,10 +4,8 @@
     "refmap": "${mod_id}.refmap.json",
     "compatibilityLevel": "JAVA_${java}",
     "mixins": [
-        
     ],
     "client": [
-        
     ],
     "injectors": {
         "defaultRequire": 1
