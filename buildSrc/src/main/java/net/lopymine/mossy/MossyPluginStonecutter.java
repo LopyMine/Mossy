@@ -1,6 +1,8 @@
 package net.lopymine.mossy;
 
 import dev.kikugie.stonecutter.*;
+import dev.kikugie.stonecutter.controller.StonecutterController;
+import dev.kikugie.stonecutter.controller.storage.ProjectNode;
 import lombok.experimental.ExtensionMethod;
 import org.gradle.*;
 import org.gradle.api.*;
@@ -15,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 @ExtensionMethod(MossyPlugin.class)
 public class MossyPluginStonecutter implements Plugin<Project> {
 
+	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	public void apply(@NotNull Project project) {
 		StonecutterController controller = project.getExtensions().getByType(StonecutterController.class);
@@ -34,24 +37,24 @@ public class MossyPluginStonecutter implements Plugin<Project> {
 			chiseledTask.setGroup("mossy-publish");
 			chiseledTask.ofTask("publishMods");
 			List<String> publicationVersions = project.getPublicationVersions();
-			List<StonecutterProject> list = chiseledTask.getVersions()
+			List<ProjectNode> list = chiseledTask.getNodes()
 					.get()
 					.stream()
-					.filter(stonecutterProject -> publicationVersions.contains(stonecutterProject.getProject()))
+					.filter(node -> publicationVersions.contains(node.getName()))
 					.toList();
-			chiseledTask.getVersions().set(list);
+			chiseledTask.getNodes().set(list);
 		});
 
-		for (StonecutterProject version : controller.getVersions()) {
-			registerConsumer.accept("chiseledBuildAndCollect+%s".formatted(version.getProject()), (chiseledTask) -> {
+		for (ProjectNode node : controller.getTree().getNodes()) {
+			registerConsumer.accept("chiseledBuildAndCollect+%s".formatted(node.getName()), (chiseledTask) -> {
 				chiseledTask.setGroup("mossy-build");
 				chiseledTask.ofTask("publishMods");
-				chiseledTask.getVersions().set(List.of(version));
+				chiseledTask.getNodes().set(List.of(node));
 			});
-			registerConsumer.accept("chiseledPublish+%s".formatted(version.getProject()), (chiseledTask) -> {
+			registerConsumer.accept("chiseledPublish+%s".formatted(node.getName()), (chiseledTask) -> {
 				chiseledTask.setGroup("mossy-publish");
 				chiseledTask.ofTask("publishMods");
-				chiseledTask.getVersions().set(List.of(version));
+				chiseledTask.getNodes().set(List.of(node));
 			});
 		}
 

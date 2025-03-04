@@ -1,6 +1,7 @@
 package net.lopymine.mossy;
 
 import dev.kikugie.stonecutter.*;
+import dev.kikugie.stonecutter.build.StonecutterBuild;
 import lombok.Getter;
 import me.modmuss50.mpp.ModPublishExtension;
 import org.gradle.api.*;
@@ -81,8 +82,9 @@ public class MossyPlugin implements Plugin<Project> {
 		project.getTasks().register("generatePersonalProperties", GeneratePersonalPropertiesTask.class, (task) -> {
 			task.setGroup("mossy");
 		});
-		project.getTasks().register("regenerateRunConfigurations", RegenerateRunConfigsTask.class, (task) -> {
+		project.getTasks().register("regenerateRunConfigurations", Delete.class, (task) -> {
 			task.setGroup("mossy");
+			task.delete(getRootFile(project, "/.idea/runConfigurations/"));
 			task.finalizedBy("ideaSyncTask");
 		});
 		project.getTasks().register("rebuildLibs", Delete.class, task -> {
@@ -126,9 +128,9 @@ public class MossyPlugin implements Plugin<Project> {
 	public static int getJavaVersion(Project project) {
 		String currentMCVersion = getCurrentMCVersion(project);
 		StonecutterBuild stonecutter = getStonecutter(project);
-		return stonecutter.compare("1.20.5", currentMCVersion) == 1 ?
-				stonecutter.compare("1.18", currentMCVersion) == 1 ?
-						stonecutter.compare("1.16.5", currentMCVersion) == 1 ?
+		return stonecutter.eval("1.20.5", ">" + currentMCVersion) ?
+				stonecutter.eval("1.18", ">" + currentMCVersion) ?
+						stonecutter.eval("1.16.5", ">" + currentMCVersion) ?
 								8
 								:
 								16
