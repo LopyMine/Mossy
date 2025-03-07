@@ -24,9 +24,12 @@ plugins {
     id("dev.kikugie.stonecutter") version("0.5.1")
 }
 
-def multiVersions = getMultiVersions()
+def multiLoaders = getMultiVersions()
 
-println "Found MC versions: ${multiVersions}"
+println "Found loaders: ${multiLoaders.keySet()}"
+multiLoaders.forEach {a, b ->
+	println "${a}: ${b}"
+}
 
 def additionalDepends = []
 properties.each { k, v ->
@@ -46,26 +49,31 @@ if (additionalDepends.isEmpty()) {
 
 stonecutter {
     shared {
-        versions(multiVersions)
-        vcsVersion = multiVersions.last()
+        multiLoaders.forEach { loader, versions ->
+	        versions.forEach {v ->
+		        vers("${loader}+${v}", v)
+	        }
+        }
     }
 
     create(rootProject)
 
-    multiVersions.each { multiVersion ->
-        createGradleProperties(multiVersion, additionalDepends)
-        createAW(multiVersion)
+    multiLoaders.forEach {loader, versions ->
+	    versions.forEach {v ->
+		    createGradleProperties(loader, v, additionalDepends)
+		    createAW(loader, v)
+	    }
     }
 }
 
 rootProject.name = properties.get("data.mod_name")
 
-def createAW(String version) {
+def createAW(String loader, String version) {
     def awsFolder = file("src/main/resources/aws/")
     if (!awsFolder.exists() && !awsFolder.mkdirs()) {
         return
     }
-    def awFile = file("src/main/resources/aws/${version}.accesswidener")
+    def awFile = file("src/main/resources/aws/${loader}+${version}.accesswidener")
     if (awFile.exists() || !awFile.createNewFile()) {
         return
     }
@@ -78,12 +86,12 @@ def createAW(String version) {
     println "Successfully created AW for ${version}"
 }
 
-def createGradleProperties(String version, ArrayList<String> additionalDepends) {
-    def folderFile = file("/versions/${version}")
+def createGradleProperties(String loader, String version, ArrayList<String> additionalDepends) {
+    def folderFile = file("/versions/${loader}+${version}")
     if (!folderFile.exists() && !folderFile.mkdirs()) {
         return
     }
-    def gradleProperties = file("/versions/${version}/gradle.properties")
+    def gradleProperties = file("/versions/${loader}+${version}/gradle.properties")
     if (gradleProperties.exists() || !gradleProperties.createNewFile()) {
         return
     }
@@ -139,16 +147,23 @@ static String getDependVersion(String modId, String minecraftVersion) {
     return result["version_number"].toString()
 }
 
-String[] getMultiVersions() {
-	def versions = []
-	multi_versions.toString().split(" ").each { s ->
-		def index = s.indexOf("[")
-		if (index == -1) {
-			versions.add(s)
-			return
+Map<String, List<String>> getMultiVersions() {
+	def map = new HashMap<String, List<String>>()
+
+	multi_loaders.toString().split(" ").each { loader ->
+		def versions = []
+		def loaderVersions = properties.get("loader.${loader}".toString())
+		loaderVersions.toString().split(" ").each { s ->
+			def index = s.indexOf("[")
+			if (index == -1) {
+				versions.add(s)
+				return
+			}
+			versions.add(s.substring(0, index))
 		}
-		versions.add(s.substring(0, index))
+		map.put(loader, versions)
 	}
-	return versions
+
+	return map
 }
 

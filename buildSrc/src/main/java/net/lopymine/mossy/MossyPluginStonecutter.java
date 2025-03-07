@@ -33,18 +33,6 @@ public class MossyPluginStonecutter implements Plugin<Project> {
 			chiseledTask.ofTask("publishMods");
 		});
 
-		registerConsumer.accept("chiseledPublishSpecified", (chiseledTask) -> {
-			chiseledTask.setGroup("mossy-publish");
-			chiseledTask.ofTask("publishMods");
-			List<String> publicationVersions = project.getPublicationVersions();
-			List<ProjectNode> list = chiseledTask.getNodes()
-					.get()
-					.stream()
-					.filter(node -> publicationVersions.contains(node.getName()))
-					.toList();
-			chiseledTask.getNodes().set(list);
-		});
-
 		for (ProjectNode node : controller.getTree().getNodes()) {
 			registerConsumer.accept("chiseledBuildAndCollect+%s".formatted(node.getName()), (chiseledTask) -> {
 				chiseledTask.setGroup("mossy-build");

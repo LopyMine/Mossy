@@ -7,6 +7,7 @@ import org.gradle.language.jvm.tasks.ProcessResources;
 
 import net.lopymine.mossy.MossyPlugin;
 import net.lopymine.mossy.extension.*;
+import net.lopymine.mossy.multi.ProjectVersion;
 
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -35,14 +36,15 @@ public class MossyProcessResourcesManager {
 		ProcessResources processResources = (ProcessResources) project.getTasks().getByName("processResources");
 		TaskInputsInternal inputs = processResources.getInputs();
 
-		String mcVersion = plugin.getProjectMultiVersion().projectVersion();
+		ProjectVersion projectVersion = plugin.getProjectVersion();
 		String modId = project.getProperty("data.mod_id");
 
 		Map<String, String> properties = project.getMossyProperties("data");
 		properties.putAll(project.getMossyProperties("build"));
 		properties.put("java", String.valueOf(plugin.getJavaVersionIndex()));
-		properties.put("minecraft", mcVersion);
-		properties.put("fabric_api_id", project.getStonecutter().eval("1.19.1", ">=" + mcVersion) ? "fabric" : "fabric-api");
+		properties.put("minecraft", projectVersion.minecraftVersion());
+		properties.put("loader", projectVersion.loader());
+		properties.put("fabric_api_id", project.getStonecutter().eval("1.19.1", ">=" + projectVersion.minecraftVersion()) ? "fabric" : "fabric-api");
 
 		properties.forEach(inputs::property);
 
@@ -57,7 +59,7 @@ public class MossyProcessResourcesManager {
 		});
 
 		processResources.filesMatching("aws/*.accesswidener", (details) -> {
-			if (!details.getName().startsWith(mcVersion)) {
+			if (!details.getName().startsWith(projectVersion.toString())) {
 				details.exclude();
 			}
 		});

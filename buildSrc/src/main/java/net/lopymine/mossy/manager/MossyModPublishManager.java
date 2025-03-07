@@ -10,7 +10,7 @@ import org.gradle.api.provider.Provider;
 import net.fabricmc.loom.task.RemapJarTask;
 
 import net.lopymine.mossy.MossyPlugin;
-import net.lopymine.mossy.multi.MultiVersion;
+import net.lopymine.mossy.multi.ProjectVersion;
 
 import java.io.*;
 import java.util.Arrays;
@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 public class MossyModPublishManager {
 
 	public static void apply(@NotNull Project project, MossyPlugin mossyPlugin, ModPublishExtension mpe) {
-		MultiVersion projectMultiVersion = mossyPlugin.getProjectMultiVersion();
-		String name = "[%s] %s v%s".formatted(projectMultiVersion.toVersionRange(), project.getProperty("data.mod_name"), project.getProperty("data.mod_version"));
+		ProjectVersion projectProjectVersion = mossyPlugin.getProjectVersion();
+		String name = "[%s] %s v%s".formatted(projectProjectVersion.toString(), project.getProperty("data.mod_name"), project.getProperty("data.mod_version"));
 
 		String[] loaders = project.getProperty("loaders").split(" ");
 		String modrinthId = project.getProperty("modrinth_id");
@@ -59,14 +59,7 @@ public class MossyModPublishManager {
 			curseforge.getClientRequired().set(isForClient);
 			curseforge.getServerRequired().set(isForServer);
 
-			if (projectMultiVersion.minIsMax()) {
-				curseforge.getMinecraftVersions().add(projectMultiVersion.maxVersion());
-			} else {
-				curseforge.minecraftVersionRange((options) -> {
-					options.getStart().set(projectMultiVersion.minVersion());
-					options.getEnd().set(projectMultiVersion.maxVersion());
-				});
-			}
+			curseforge.getMinecraftVersions().add(projectProjectVersion.minecraftVersion());
 
 			if (!dependsEmbeds[0].equals("none")) {
 				curseforge.embeds(dependsEmbeds);
@@ -86,14 +79,7 @@ public class MossyModPublishManager {
 			modrinth.getProjectId().set(modrinthId);
 			modrinth.getAccessToken().set(modrinthApiKey);
 
-			if (projectMultiVersion.minIsMax()) {
-				modrinth.getMinecraftVersions().add(projectMultiVersion.maxVersion());
-			} else {
-				modrinth.minecraftVersionRange((options) -> {
-					options.getStart().set(projectMultiVersion.minVersion());
-					options.getEnd().set(projectMultiVersion.maxVersion());
-				});
-			}
+			modrinth.getMinecraftVersions().add(projectProjectVersion.minecraftVersion());
 
 			if (!dependsEmbeds[0].equals("none")) {
 				modrinth.embeds(dependsEmbeds);

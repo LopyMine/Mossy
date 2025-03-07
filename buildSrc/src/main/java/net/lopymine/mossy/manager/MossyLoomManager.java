@@ -21,8 +21,8 @@ public class MossyLoomManager {
 	@SuppressWarnings("UnstableApiUsage")
 	public static void apply(@NotNull Project project, MossyPlugin plugin, LoomGradleExtensionAPI loom) {
 		String modId = project.getProperty("data.mod_id");
-		String currentVersion = plugin.getProjectMultiVersion().projectVersion();
-		File file = project.getRootFile("src/main/resources/aws/%s.accesswidener".formatted(currentVersion));
+		String projectVersion = plugin.getProjectVersion().toString();
+		File file = project.getRootFile("src/main/resources/aws/%s.accesswidener".formatted(projectVersion));
 
 		// Mixins and AWs
 

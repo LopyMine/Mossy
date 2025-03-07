@@ -1,6 +1,5 @@
 package net.lopymine.mossy;
 
-import dev.kikugie.stonecutter.*;
 import dev.kikugie.stonecutter.build.StonecutterBuild;
 import lombok.Getter;
 import me.modmuss50.mpp.ModPublishExtension;
@@ -13,7 +12,7 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 import net.fabricmc.loom.task.RemapJarTask;
 
 import net.lopymine.mossy.manager.*;
-import net.lopymine.mossy.multi.MultiVersion;
+import net.lopymine.mossy.multi.ProjectVersion;
 import net.lopymine.mossy.tasks.*;
 
 import java.io.*;
@@ -26,7 +25,7 @@ public class MossyPlugin implements Plugin<Project> {
 
 	public static final MossyLogger LOGGER = new MossyLogger();
 
-	private MultiVersion projectMultiVersion;
+	private ProjectVersion projectVersion;
 	private int javaVersionIndex;
 	private JavaVersion javaVersion;
 
@@ -42,7 +41,7 @@ public class MossyPlugin implements Plugin<Project> {
 
 		//
 
-		this.projectMultiVersion = MossyPlugin.getProjectMultiVersion(project);
+		this.projectVersion   = MossyPlugin.getProjectVersion(project);
 		this.javaVersionIndex = MossyPlugin.getJavaVersion(project);
 		this.javaVersion = JavaVersion.toVersion(this.javaVersionIndex);
 
@@ -126,7 +125,7 @@ public class MossyPlugin implements Plugin<Project> {
 	}
 
 	public static int getJavaVersion(Project project) {
-		String currentMCVersion = getCurrentMCVersion(project);
+		String currentMCVersion = substringSince(getCurrentProject(project), "+");
 		StonecutterBuild stonecutter = getStonecutter(project);
 		return stonecutter.eval("1.20.5", ">" + currentMCVersion) ?
 				stonecutter.eval("1.18", ">" + currentMCVersion) ?
@@ -141,33 +140,11 @@ public class MossyPlugin implements Plugin<Project> {
 	}
 
 
-	public static MultiVersion getProjectMultiVersion(@NotNull Project currentProject) {
-		String currentMCVersion = getCurrentMCVersion(currentProject);
-
-		String[] versions = getProperty(currentProject, "publication_versions").split(" ");
-		for (String version : versions) {
-			String[] split = version.substring(0, version.length()-1).split("\\[");
-			String project = split[0];
-			if (Objects.equals(project, currentMCVersion)) {
-				String supportedVersionsString = split[1];
-				if (supportedVersionsString.contains("-")) {
-					String[] supportedVersions = supportedVersionsString.split("-");
-					return new MultiVersion(currentMCVersion, supportedVersions[0], supportedVersions[1]);
-				} else if (supportedVersionsString.contains(".")) {
-					return new MultiVersion(currentMCVersion, currentMCVersion, supportedVersionsString);
-				} else {
-					int a = project.indexOf(".");
-					int i = project.lastIndexOf(".");
-					if (a == i) {
-						i = project.length();
-					}
-					String p = project.substring(0, i);
-					String supportedMaxVersion = "%s.%s".formatted(p, supportedVersionsString);
-					return new MultiVersion(currentMCVersion, currentMCVersion, supportedMaxVersion);
-				}
-			}
-		}
-		return new MultiVersion(currentMCVersion, currentMCVersion, currentMCVersion);
+	public static ProjectVersion getProjectVersion(@NotNull Project currentProject) {
+		String current = getCurrentProject(currentProject);
+		String loader = substringBefore(current, "+");
+		String version = substringSince(current, "+");
+		return new ProjectVersion(loader, version);
 	}
 
 	public static Properties getPersonalProperties(@NotNull Project project) {
@@ -204,7 +181,7 @@ public class MossyPlugin implements Plugin<Project> {
 		return dependencies;
 	}
 
-	public static String getCurrentMCVersion(@NotNull Project project) {
+	public static String getCurrentProject(@NotNull Project project) {
 		return getStonecutter(project).getCurrent().getProject();
 	}
 
@@ -220,15 +197,17 @@ public class MossyPlugin implements Plugin<Project> {
 		return properties.get(id).toString();
 	}
 
-	public static String[] getMultiVersions(@NotNull Project project) {
-		return getProperty(project, "multi_versions").split(" ");
+	public static Map<String, List<String>> getMultiLoadersAsMap(@NotNull Project project) {
+		Map<String, List<String>> map = new HashMap<>();
+		for (String loader : getProperty(project, "multi_loaders").split(" ")) {
+			String[] versions = getProperty(project, "loader." + loader).split(" ");
+			map.put(loader, Arrays.stream(versions).toList());
+		}
+		return map;
 	}
 
-	public static List<String> getPublicationVersions(@NotNull Project project) {
-		return Arrays.stream(getProperty(project, "publication_versions")
-				.split(" "))
-				.map((version) -> substringBefore(version, "["))
-				.toList();
+	public static String[] getMultiLoaders(@NotNull Project project) {
+		return getProperty(project, "multi_loaders").split(" ");
 	}
 
 	public static String substringBefore(String value, String since) {
@@ -249,8 +228,8 @@ public class MossyPlugin implements Plugin<Project> {
 
 	public String getMossyProjectVersion(Project project) {
 		String modVersion = getProperty(project, "data.mod_version");
-		MultiVersion multiVersion = this.getProjectMultiVersion();
-		return "%s+%s".formatted(modVersion, multiVersion.projectVersion());
+		ProjectVersion projectVersion = this.getProjectVersion();
+		return "%s+%s".formatted(projectVersion.toString(), modVersion);
 	}
 
 	public static File getRootFile(@NotNull Project project, String path) {
