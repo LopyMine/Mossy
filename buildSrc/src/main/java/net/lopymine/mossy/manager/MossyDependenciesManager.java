@@ -33,18 +33,25 @@ public class MossyDependenciesManager {
 
 		Map<String, String> properties = project.getMossyProperties("dep");
 		MossyAdditionalDependencies additional = extension.getAdditional();
-		additional.override("yacl", "dev.isxander:yet-another-config-lib:%s");
+		additional.disable("yacl");
 
 		Map<String, AdditionalDependencyOverride> overrides = additional.getOverrides();
 		Set<String> disabled = additional.getDisabled();
 		properties.forEach((modId, version) -> {
 			if (disabled.contains(modId)) {
+				//System.out.println("Disabling auto-dependency for %s !".formatted(modId));
 				return;
 			}
+
 			AdditionalDependencyOverride override = overrides.get(modId);
 			String configurationName = override != null ? override.configurationName() : "modImplementation";
 			dependencies.add(configurationName, "maven.modrinth:%s:%s".formatted(modId, version));
 		});
+
+		String yaclVersion = properties.get("yacl");
+		if (yaclVersion != null) {
+			dependencies.add("modImplementation", "dev.isxander:yet-another-config-lib:%s".formatted(yaclVersion));
+		}
 	}
 
 	private static void addRepositories(Project project) {
