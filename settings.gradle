@@ -65,11 +65,12 @@ def createAW(String version) {
 
 def createGradleProperties(String version, ArrayList<String> additionalDepends) {
 	def file = getOrCreateGradlePropertiesFile(version)
-	def update = file.text.replace(" ", "").contains("=[UPDATE]")
-	println update
-
+	if (file == null) {
+		return
+	}
 	def isEmpty = file.text.isBlank() || file.text.isEmpty()
-	if (!(file != null && ((!isEmpty && update) || isEmpty))) {
+	def update = file.text.replace(" ", "").contains("=[UPDATE]")
+	if (!isEmpty && !update) {
 		return
 	}
 
@@ -111,6 +112,8 @@ def createGradleProperties(String version, ArrayList<String> additionalDepends) 
 	} else {
 		def writer = new FileWriter(file)
 		writer.write("# Versioned Properties\n")
+		writer.write("# Tip: You can set any dependency value to \"[UPDATE]\"\n")
+		writer.write("# and reload Gradle to update only it's value.\n")
 		writer.write("\n")
 		writer.write("# Fabric Properties, check https://fabricmc.net/develop/\n")
 		writer.write("build.yarn=${getYarnVersion(version)}\n")
