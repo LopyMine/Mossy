@@ -38,6 +38,7 @@ public class MossyPlugin implements Plugin<Project> {
 		PluginContainer plugins = project.getPlugins();
 		plugins.apply("fabric-loom");
 		plugins.apply("me.modmuss50.mod-publish-plugin");
+		plugins.apply("dev.kikugie.j52j");
 
 		//
 
@@ -50,6 +51,7 @@ public class MossyPlugin implements Plugin<Project> {
 		MossyPlugin.configureProject(project, this);
 
 		MossyJavaManager.apply(project,this);
+		MossyJ52JManager.apply(project);
 		MossyProcessResourcesManager.apply(project, this);
 
 		MossyDependenciesManager.apply(project);

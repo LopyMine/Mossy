@@ -6,9 +6,10 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import net.lopymine.mossy.*;
-import net.lopymine.mossy.extension.MossyDependenciesExtension;
+import net.lopymine.mossy.extension.*;
+import net.lopymine.mossy.extension.MossyAdditionalDependencies.AdditionalDependencyOverride;
 
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,14 +32,18 @@ public class MossyDependenciesManager {
 		dependencies.add("annotationProcessor", "org.projectlombok:lombok:%s".formatted(lombok));
 
 		Map<String, String> properties = project.getMossyProperties("dep");
-		String yacl = properties.remove("yacl");
+		MossyAdditionalDependencies additional = extension.getAdditional();
+		additional.override("yacl", "dev.isxander:yet-another-config-lib:%s");
 
-		if (yacl != null) {
-			dependencies.add("modImplementation", "dev.isxander:yet-another-config-lib:%s".formatted(yacl));
-		}
-
-		properties.forEach((key, value) -> {
-			dependencies.add("modImplementation", "maven.modrinth:%s:%s".formatted(key, value));
+		Map<String, AdditionalDependencyOverride> overrides = additional.getOverrides();
+		Set<String> disabled = additional.getDisabled();
+		properties.forEach((modId, version) -> {
+			if (disabled.contains(modId)) {
+				return;
+			}
+			AdditionalDependencyOverride override = overrides.get(modId);
+			String configurationName = override != null ? override.configurationName() : "modImplementation";
+			dependencies.add(configurationName, "maven.modrinth:%s:%s".formatted(modId, version));
 		});
 	}
 
