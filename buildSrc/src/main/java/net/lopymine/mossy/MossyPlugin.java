@@ -16,6 +16,7 @@ import net.lopymine.mossy.multi.MultiVersion;
 import net.lopymine.mossy.tasks.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import org.jetbrains.annotations.NotNull;
@@ -83,13 +84,14 @@ public class MossyPlugin implements Plugin<Project> {
 		project.getTasks().register("generatePersonalProperties", GeneratePersonalPropertiesTask.class, (task) -> {
 			task.setGroup("mossy");
 		});
-		project.getTasks().register("regenerateRunConfigurations", RegenerateRunConfigsTask.class, (task) -> {
+		project.getTasks().register("regenerateRunConfigurations", Delete.class, (task) -> {
 			task.setGroup("mossy");
+			task.delete(getRootFile(project, ".idea/runConfigurations"));
 			task.finalizedBy("ideaSyncTask");
 		});
 		project.getTasks().register("rebuildLibs", Delete.class, task -> {
 			task.setGroup("build");
-			String modName = getProperty(project, "data.mod_name");
+			String modName = getProperty(project, "data.mod_name").replace(" ", "");
 			String version = project.getVersion().toString();
 
 			String jarFileName = "libs/%s-%s.jar".formatted(modName, version);
@@ -117,9 +119,10 @@ public class MossyPlugin implements Plugin<Project> {
 		project.setGroup(mavenGroup);
 
 		BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
-		base.getArchivesName().set(getProperty(project, "data.mod_name"));
+		base.getArchivesName().set(getProperty(project, "data.mod_name").replace(" ", ""));
 
 		Jar jar = (Jar) project.getTasks().getByName("jar");
+		jar.getArchiveBaseName().set(base.getArchivesName().get());
 		jar.from(getRootFile(project, "LICENSE"), (spec) -> {
 			spec.rename(s -> "%s_%s".formatted(s, base.getArchivesName().get()));
 		});
@@ -172,20 +175,34 @@ public class MossyPlugin implements Plugin<Project> {
 
 	public static Properties getPersonalProperties(@NotNull Project project) {
 		File file = project.getRootProject().file("personal/personal.properties");
-		return getProperties(file);
-	}
+		Properties personalProperties = new Properties();
 
-	public static @NotNull Properties getProperties(File file) {
-		Properties properties = new Properties();
-
-		if (file.exists()) {
-			try {
-				properties.load(new FileInputStream(file));
-			} catch (Exception ignored) {
-			}
+		if (!file.exists()) {
+			return personalProperties;
 		}
 
-		return properties;
+		try (InputStream stream = new FileInputStream(file)) {
+			personalProperties.load(stream);
+		} catch (IOException e) {
+			LOGGER.log("Something went wrong when parsing personal properties:");
+			LOGGER.log(e.getMessage());
+		}
+
+		try {
+			String mixinPath = "absolute_path_to_sponge_mixin";
+
+			for (String line : Files.readAllLines(file.toPath())) {
+				if (!line.startsWith(mixinPath)) {
+					continue;
+				}
+				personalProperties.setProperty(mixinPath, line.substring(mixinPath.length() + 1));
+			}
+		} catch (Exception e) {
+			LOGGER.log("Something went wrong when parsing personal properties mixin path:");
+			LOGGER.log(e.getMessage());
+		}
+
+		return personalProperties;
 	}
 
 	public static Map<String, String> getMossyProperties(Project project, String prefix) {
@@ -231,6 +248,25 @@ public class MossyPlugin implements Plugin<Project> {
 				.toList();
 	}
 
+	@SuppressWarnings("unused")
+	public static String substringBeforeLast(String value, String since) {
+		int i = value.lastIndexOf(since);
+		if (i == -1) {
+			return value;
+		}
+		return value.substring(0, i);
+	}
+
+	@SuppressWarnings("unused")
+	public static String substringSinceLast(String value, String since) {
+		int i = value.lastIndexOf(since);
+		if (i == -1) {
+			return value;
+		}
+		return value.substring(i + 1);
+	}
+
+	@SuppressWarnings("unused")
 	public static String substringBefore(String value, String since) {
 		int i = value.indexOf(since);
 		if (i == -1) {
@@ -239,6 +275,7 @@ public class MossyPlugin implements Plugin<Project> {
 		return value.substring(0, i);
 	}
 
+	@SuppressWarnings("unused")
 	public static String substringSince(String value, String since) {
 		int i = value.indexOf(since);
 		if (i == -1) {
