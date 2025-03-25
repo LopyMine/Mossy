@@ -17,7 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
 
 import static net.lopymine.mossy.utils.CodecUtils.option;
-import static net.lopymine.mossy.utils.CodecUtils.optional;
 
 @Getter
 @Setter
@@ -25,8 +24,8 @@ import static net.lopymine.mossy.utils.CodecUtils.optional;
 public class MossyConfig {
 
 	public static final Codec<MossyConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			option("mossy", Codec.BOOL, MossyConfig::isMossy),
-			optional("secret", 0.0F, Codec.FLOAT, MossyConfig::getSecret)
+			option("mossy", false, Codec.BOOL, MossyConfig::isMossy),
+			option("secret", 0.0F, Codec.FLOAT, MossyConfig::getSecret)
 	).apply(instance, MossyConfig::new));
 
 	private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(Mossy.MOD_ID + ".json5").toFile();

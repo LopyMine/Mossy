@@ -13,17 +13,13 @@ import java.util.function.*;
 @SuppressWarnings("unused")
 public final class CodecUtils {
 
-	public static <A, B> RecordCodecBuilder<A, B> optional(String optionId, B defValue, Codec<B> codec, Function<A, B> getter) {
+	public static <A, B> RecordCodecBuilder<A, B> option(String optionId, B defValue, Codec<B> codec, Function<A, B> getter) {
 		return codec.optionalFieldOf(optionId).xmap((o) -> o.orElse(defValue), Optional::ofNullable).forGetter(getter);
-	}
-
-	public static <A, B> RecordCodecBuilder<A, B> option(String optionId, Codec<B> codec, Function<A, B> getter) {
-		return codec.fieldOf(optionId).forGetter(getter);
 	}
 
 	public static <T> void decode(Codec<T> codec, JsonElement o, Consumer<T> consumer) {
 		try {
-			T value = codec.decode(JsonOps.INSTANCE, o)/*? if >=1.20.5 {*/.getOrThrow()/*?} else {*//*.getOrThrow(false, LOGGER::error)*//*?}*/.getFirst();
+			T value = codec.decode(JsonOps.INSTANCE, o)/*? if >=1.20.5 {*/.getOrThrow()/*?} else {*//*.getOrThrow(false, MossyClient.LOGGER::error)*//*?}*/.getFirst();
 			consumer.accept(value);
 		} catch (Exception e) {
 			MossyClient.LOGGER.warn("Failed to decode JsonElement:", e);
