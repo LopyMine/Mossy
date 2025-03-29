@@ -74,15 +74,25 @@ def createGradleProperties(String version, ArrayList<String> additionalDepends) 
 
 	def isEmpty = file.text.isBlank() || file.text.isEmpty()
 
+	// add dep
 	def missingDepends = additionalDepends.findAll { id ->
-		if (!gradleProperties.containsKey("dep.${id}".toString())) {
+		def key = "dep.${id}".toString()
+		if (properties.get(key).toString() != "[VERSIONED]") {
+			return null
+		}
+		if (!gradleProperties.containsKey(key)) {
 			return id
 		}
 		return null
 	}
+
+	// remove dep
 	def oldDepends = gradleProperties.keySet().findAll { id ->
 		if (!id.toString().startsWith("dep.")) {
 			return null
+		}
+		if (properties.containsKey(id) && properties.get(id).toString() != "[VERSIONED]") {
+			return id.toString()
 		}
 		if (!additionalDepends.contains(substringSince(id.toString(), ".").toString())) {
 			return id.toString()
