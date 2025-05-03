@@ -9,6 +9,7 @@ import org.gradle.api.initialization.Settings;
 import org.gradle.api.invocation.Gradle;
 import org.gradle.api.tasks.TaskContainer;
 
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 @ExtensionMethod(MossyPlugin.class)
@@ -40,8 +41,30 @@ public class MossyPluginStonecutter implements Plugin<Project> {
 			task.setGroup("mossy-build");
 		});
 
+		tasks.register("buildAndCollect+Specified", (task) -> {
+			List<String> versionsSpecifications = project.getVersionsSpecifications();
+			controller.getVersions().forEach((version) -> {
+				if (!versionsSpecifications.contains(version.getProject())) {
+					return;
+				}
+				task.dependsOn(":%s:buildAndCollect".formatted(version.getProject()));
+			});
+			task.setGroup("mossy-build");
+		});
+
 		tasks.register("publish+All", (task) -> {
 			controller.getVersions().forEach((version) -> {
+				task.dependsOn(":%s:publishModrinth".formatted(version.getProject()));
+			});
+			task.setGroup("mossy-publish");
+		});
+
+		tasks.register("publish+Specified", (task) -> {
+			List<String> versionsSpecifications = project.getVersionsSpecifications();
+			controller.getVersions().forEach((version) -> {
+				if (!versionsSpecifications.contains(version.getProject())) {
+					return;
+				}
 				task.dependsOn(":%s:publishModrinth".formatted(version.getProject()));
 			});
 			task.setGroup("mossy-publish");

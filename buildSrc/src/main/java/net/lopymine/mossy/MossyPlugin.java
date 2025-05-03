@@ -1,6 +1,5 @@
 package net.lopymine.mossy;
 
-import dev.kikugie.stonecutter.*;
 import dev.kikugie.stonecutter.build.StonecutterBuildExtension;
 import lombok.Getter;
 import me.modmuss50.mpp.ModPublishExtension;
@@ -148,7 +147,7 @@ public class MossyPlugin implements Plugin<Project> {
 	public static MultiVersion getProjectMultiVersion(@NotNull Project currentProject) {
 		String currentMCVersion = getCurrentMCVersion(currentProject);
 
-		String[] versions = getProperty(currentProject, "publication_versions").split(" ");
+		String[] versions = getProperty(currentProject, "versions_specifications").split(" ");
 		for (String version : versions) {
 			String[] split = version.substring(0, version.length()-1).split("\\[");
 			String project = split[0];
@@ -242,8 +241,8 @@ public class MossyPlugin implements Plugin<Project> {
 		return getProperty(project, "multi_versions").split(" ");
 	}
 
-	public static List<String> getPublicationVersions(@NotNull Project project) {
-		return Arrays.stream(getProperty(project, "publication_versions")
+	public static List<String> getVersionsSpecifications(@NotNull Project project) {
+		return Arrays.stream(getProperty(project, "versions_specifications")
 				.split(" "))
 				.map((version) -> substringBefore(version, "["))
 				.toList();
