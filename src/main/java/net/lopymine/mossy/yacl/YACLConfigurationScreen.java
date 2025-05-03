@@ -25,10 +25,10 @@ public class YACLConfigurationScreen {
 	}
 
 	public static Screen createScreen(Screen parent) {
-		MossyConfig defConfig = new MossyConfig();
-		MossyConfig config = MossyClient.getConfig();
+		MossyConfig defConfig = MossyConfig.getNewInstance();
+		MossyConfig config = MossyConfig.getInstance();
 
-		return SimpleYACLScreen.startBuilder(parent, config::save)
+		return SimpleYACLScreen.startBuilder(parent, config::saveAsync)
 				.categories(getGeneralCategory(defConfig, config))
 				.categories(SimpleCollector.getIf(getSecretCategory(defConfig, config), config::isMossy))
 				.build();

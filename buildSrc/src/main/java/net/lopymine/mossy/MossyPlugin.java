@@ -1,6 +1,7 @@
 package net.lopymine.mossy;
 
 import dev.kikugie.stonecutter.*;
+import dev.kikugie.stonecutter.build.StonecutterBuildExtension;
 import lombok.Getter;
 import me.modmuss50.mpp.ModPublishExtension;
 import org.gradle.api.*;
@@ -130,7 +131,7 @@ public class MossyPlugin implements Plugin<Project> {
 
 	public static int getJavaVersion(Project project) {
 		String currentMCVersion = getCurrentMCVersion(project);
-		StonecutterBuild stonecutter = getStonecutter(project);
+		StonecutterBuildExtension stonecutter = getStonecutter(project);
 		return stonecutter.compare("1.20.5", currentMCVersion) == 1 ?
 				stonecutter.compare("1.18", currentMCVersion) == 1 ?
 						stonecutter.compare("1.16.5", currentMCVersion) == 1 ?
@@ -225,8 +226,8 @@ public class MossyPlugin implements Plugin<Project> {
 		return getStonecutter(project).getCurrent().getProject();
 	}
 
-	public static @NotNull StonecutterBuild getStonecutter(@NotNull Project project) {
-		return (StonecutterBuild) project.getExtensions().getByName("stonecutter");
+	public static @NotNull StonecutterBuildExtension getStonecutter(@NotNull Project project) {
+		return (StonecutterBuildExtension) project.getExtensions().getByName("stonecutter");
 	}
 
 	public static String getProperty(@NotNull Project project, String id) {
