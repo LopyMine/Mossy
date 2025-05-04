@@ -54,6 +54,7 @@ public class MossyPluginStonecutter implements Plugin<Project> {
 
 		tasks.register("publish+All", (task) -> {
 			controller.getVersions().forEach((version) -> {
+				System.out.println(version.getProject());
 				task.dependsOn(":%s:publishModrinth".formatted(version.getProject()));
 			});
 			task.setGroup("mossy-publish");
