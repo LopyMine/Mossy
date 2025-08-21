@@ -21,7 +21,7 @@ pluginManagement {
 }
 
 plugins {
-	id "dev.kikugie.stonecutter" version "0.7-beta.3"
+	id "dev.kikugie.stonecutter" version "0.7.1"
 }
 
 def multiVersions = getMultiVersions()
@@ -35,12 +35,10 @@ if (additionalDepends.isEmpty()) {
 }
 
 stonecutter {
-	shared {
+	create(rootProject) {
 		versions(multiVersions)
 		vcsVersion = multiVersions.last()
 	}
-
-	create(rootProject)
 
 	multiVersions.each { multiVersion ->
 		createGradleProperties(multiVersion, additionalDepends)

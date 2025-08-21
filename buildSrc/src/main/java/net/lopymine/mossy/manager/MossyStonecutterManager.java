@@ -31,7 +31,6 @@ public class MossyStonecutterManager {
 
 		dependencies.forEach((modId, version) -> {
 			stonecutter.getConstants().put(modId, !version.equals("unknown"));
-			stonecutter.getDependencies().put(modId, version);
 		});
 	}
 
