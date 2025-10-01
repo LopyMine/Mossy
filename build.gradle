@@ -14,7 +14,7 @@ mossyDependencies {
 	    // - Modrinth Maven and "modImplementation" configuration name
 	    // - If you want to override mod configuration name, you can do this:
 
-		//override("modCompileOnly", "just_mod_id")
+		override("modCompileOnly", "modmenu")
 
 		// - It will do this:
 		// - modImplementation("maven.modrinth:modId:version") -> modCompileOnly("maven.modrinth:modId:version")

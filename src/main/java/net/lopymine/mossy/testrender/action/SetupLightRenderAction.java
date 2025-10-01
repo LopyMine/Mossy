@@ -12,8 +12,8 @@ public class SetupLightRenderAction implements IRenderAction {
 	@Override
 	public void render(RenderContext context, IRenderArgument... args) {
 		//? if >=1.21.6 {
-		/*net.minecraft.client.render.DiffuseLighting.Type type = net.minecraft.client.render.DiffuseLighting.Type.valueOf(args[0].get().toUpperCase());
+		net.minecraft.client.render.DiffuseLighting.Type type = net.minecraft.client.render.DiffuseLighting.Type.valueOf(args[0].get().toUpperCase());
 		context.lighting().setShaderLights(type);
-		*///?}
+		//?}
 	}
 }

@@ -17,11 +17,17 @@ public class ModrinthDependenciesAPI {
 		try {
 			element = JsonHelper.get(url);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException("\nFailed to find Modrinth project with id \"%s\"".formatted(modId), e);
+			System.out.printf("\nFailed to find Modrinth project with id \"%s\"%n", modId);
+			e.printStackTrace(System.out);
+			return "unknown";
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			e.printStackTrace(System.out);
+			return "unknown";
 		}
 		JsonArray array = element.getAsJsonArray();
+		if (array.isEmpty()) {
+			return "unknown";
+		}
 		JsonElement jsonElement = array.get(0);
 		JsonObject jsonObject = jsonElement.getAsJsonObject();
 
