@@ -1,6 +1,6 @@
 package net.lopymine.mossy.client;
 
-import org.slf4j.*;
+import net.lopymine.mossylib.logger.MossyLogger;
 
 import net.fabricmc.api.ClientModInitializer;
 
@@ -8,7 +8,7 @@ import net.lopymine.mossy.Mossy;
 
 public class MossyClient implements ClientModInitializer {
 
-	public static Logger LOGGER = LoggerFactory.getLogger(Mossy.MOD_NAME + "/Client");
+	public static MossyLogger LOGGER = Mossy.LOGGER.extend("Client");
 
 	@Override
 	public void onInitializeClient() {

@@ -1,6 +1,7 @@
 package net.lopymine.mossy.config;
 
 import lombok.*;
+import net.lopymine.mossylib.utils.*;
 import org.slf4j.*;
 
 import com.mojang.serialization.*;
@@ -8,12 +9,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.lopymine.mossy.Mossy;
-import net.lopymine.mossy.utils.*;
 
 import java.io.*;
 import java.util.concurrent.CompletableFuture;
 
-import static net.lopymine.mossy.utils.CodecUtils.option;
+import static net.lopymine.mossylib.utils.CodecUtils.option;
 
 @Getter
 @Setter
@@ -21,8 +21,7 @@ import static net.lopymine.mossy.utils.CodecUtils.option;
 public class MossyConfig {
 
 	public static final Codec<MossyConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			option("mossy", false, Codec.BOOL, MossyConfig::isMossy),
-			option("secret", 0.0F, Codec.FLOAT, MossyConfig::getSecret)
+			option("mossy", false, Codec.BOOL, MossyConfig::isMossy)
 	).apply(instance, MossyConfig::new));
 
 	private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(Mossy.MOD_ID + ".json5").toFile();
@@ -30,8 +29,8 @@ public class MossyConfig {
 	private static MossyConfig INSTANCE;
 	
 	private boolean mossy;
-	private float secret;
 
+	@SuppressWarnings("unused")
 	private MossyConfig() {
 		throw new IllegalArgumentException();
 	}
