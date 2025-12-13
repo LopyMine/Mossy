@@ -3,9 +3,9 @@ package net.lopymine.mossy.modmenu;
 import net.lopymine.mossy.yacl.YACLConfigurationScreen;
 import net.lopymine.mossylib.MossyLib;
 import net.lopymine.mossylib.modmenu.AbstractModMenuIntegration;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
-public class ModMenuIntegration extends AbstractModMenuIntegration {
+public class MossyModMenuIntegration extends AbstractModMenuIntegration {
 
 	@Override
 	protected String getModId() {

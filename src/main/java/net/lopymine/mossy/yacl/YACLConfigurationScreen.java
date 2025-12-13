@@ -4,7 +4,7 @@ import lombok.experimental.ExtensionMethod;
 import net.lopymine.mossy.Mossy;
 import net.lopymine.mossylib.yacl.api.*;
 import net.lopymine.mossylib.yacl.extension.SimpleOptionExtension;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 import net.lopymine.mossy.config.MossyConfig;
 

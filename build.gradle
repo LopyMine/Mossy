@@ -4,31 +4,24 @@ plugins {
 
 mossyDependencies {
 	minecraft = stonecutter.current.version.toString()
-	mappings = prop("build.yarn")
+	mappings = "official"
 	lombok = prop("base.lombok_version")
+
 	fabricApi = prop("build.fabric_api")
 	fabricLoader = prop("build.fabric_loader")
 
+	forge = prop("build.forge")
+
+	neoForge = prop("build.neoforge")
+	parchment = prop("build.parchment")
+
 	additional {
-		//override("modCompileOnly", "modmenu")
-		//disable("just_mod_id")
+		//override("modCompileOnly", "yacl")
 	}
 }
 
 mossyResources {
 	//expandFiles = ["custom", "file", "patterns", "here"]
-}
-
-repositories {
-	mavenLocal()
-	maven {
-		name "Mossy Projects"
-		url "https://maven.lopymine.net/releases"
-	}
-}
-
-dependencies {
-	include(modImplementation("net.lopymine:mossylib:${prop("build.mossylib")}-${stonecutter.current.project}"))
 }
 
 String prop(String key) {
