@@ -5,7 +5,7 @@ import net.lopymine.mossylib.MossyLib;
 import net.lopymine.mossylib.modmenu.AbstractModMenuIntegration;
 import net.minecraft.client.gui.screens.Screen;
 
-public class MossyModMenuIntegration extends AbstractModMenuIntegration {
+public class ModMenuIntegration extends AbstractModMenuIntegration {
 
 	@Override
 	protected String getModId() {

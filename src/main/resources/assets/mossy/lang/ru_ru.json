@@ -4,9 +4,9 @@
 
 	"${mod_id}.modmenu.category.general.name": "§lОсновное",
 
-	"${mod_id}.modmenu.group.mossy_group.name": "§lМшистая группа",
-	"${mod_id}.modmenu.group.mossy_group.description": "Пример мшистого описания группы.",
+	"${mod_id}.modmenu.group.main.name": "§lГлавное",
+	"${mod_id}.modmenu.group.main.description": "Главные настройки мода.",
 
-	"${mod_id}.modmenu.option.mossy_option.name": "Пушистая опция",
-	"${mod_id}.modmenu.option.mossy_option.description": "Пример пушистого описания опции."
+	"${mod_id}.modmenu.option.mod_enabled.name": "Включить мод",
+	"${mod_id}.modmenu.option.mod_enabled.description": "Пиупау"
 }

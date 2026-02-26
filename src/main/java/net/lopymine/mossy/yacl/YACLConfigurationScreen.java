@@ -26,13 +26,13 @@ public class YACLConfigurationScreen {
 
 	private static SimpleCategory getGeneralCategory(MossyConfig defConfig, MossyConfig config) {
 		return SimpleCategory.startBuilder("general")
-				.groups(getMossyGroup(defConfig, config));
+				.groups(getMainGroup(defConfig, config));
 	}
 
-	private static SimpleGroup getMossyGroup(MossyConfig defConfig, MossyConfig config) {
-		return SimpleGroup.startBuilder("mossy_group").options(
-				SimpleOption.<Boolean>startBuilder("mossy_option")
-						.withBinding(defConfig.isMossy(), config::isMossy, config::setMossy, false)
+	private static SimpleGroup getMainGroup(MossyConfig defConfig, MossyConfig config) {
+		return SimpleGroup.startBuilder("main").options(
+				SimpleOption.<Boolean>startBuilder("mod_enabled")
+						.withBinding(defConfig.isModEnabled(), config::isModEnabled, config::setModEnabled, true)
 						.withController()
 						.withDescription(SimpleContent.IMAGE)
 		);

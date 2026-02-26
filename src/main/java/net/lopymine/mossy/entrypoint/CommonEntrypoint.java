@@ -6,7 +6,7 @@ import net.lopymine.mossy.Mossy;
 
 import net.fabricmc.api.ModInitializer;
 
-public class MossyEntrypoint implements ModInitializer {
+public class CommonEntrypoint implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
@@ -20,9 +20,9 @@ public class MossyEntrypoint implements ModInitializer {
 import net.neoforged.fml.common.Mod;
 
 @Mod(Mossy.MOD_ID)
-public class MossyEntrypoint {
+public class CommonEntrypoint {
 
-	public MossyEntrypoint() {
+	public CommonEntrypoint() {
 		Mossy.onInitialize();
 	}
 
@@ -35,11 +35,11 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod(Mossy.MOD_ID)
-public class MossyEntrypoint {
+public class CommonEntrypoint {
 
-	public MossyEntrypoint() {
+	public CommonEntrypoint() {
 		Mossy.onInitialize();
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> MossyClientEntrypoint::onInitializeClient);
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientEntrypoint::onInitializeClient);
 	}
 
 }

@@ -21,14 +21,14 @@ import static net.lopymine.mossylib.utils.CodecUtils.option;
 public class MossyConfig {
 
 	public static final Codec<MossyConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			option("mossy", false, Codec.BOOL, MossyConfig::isMossy)
+			option("mod_enabled", false, Codec.BOOL, MossyConfig::isModEnabled)
 	).apply(instance, MossyConfig::new));
 
 	private static final File CONFIG_FILE = MossyLoader.getConfigDir().resolve(Mossy.MOD_ID + ".json5").toFile();
 	private static final Logger LOGGER = LoggerFactory.getLogger(Mossy.MOD_NAME + "/Config");
 	private static MossyConfig INSTANCE;
 	
-	private boolean mossy;
+	private boolean modEnabled;
 
 	@SuppressWarnings("unused")
 	private MossyConfig() {

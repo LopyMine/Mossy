@@ -4,9 +4,9 @@
 
 	"${mod_id}.modmenu.category.general.name": "§lGeneral",
 
-	"${mod_id}.modmenu.group.mossy_group.name": "§lMossy Group",
-	"${mod_id}.modmenu.group.mossy_group.description": "Example Mossy Group Description.",
+	"${mod_id}.modmenu.group.main.name": "§lMain",
+	"${mod_id}.modmenu.group.main.description": "Main settings",
 
-	"${mod_id}.modmenu.option.mossy_option.name": "Mossy Option",
-	"${mod_id}.modmenu.option.mossy_option.description": "Example Mossy Option Description."
+	"${mod_id}.modmenu.option.mod_enabled.name": "Mod Enabled",
+	"${mod_id}.modmenu.option.mod_enabled.description": "Something"
 }
