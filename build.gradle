@@ -17,12 +17,14 @@ mossyDependencies {
 
 	additional {
 		//override("modCompileOnly", "yacl")
+		//disable("yacl")
 	}
 }
 
-mossyResources {
-	//expandFiles = ["custom", "file", "patterns", "here"]
-}
+//mossyResources {
+//	expandFiles = ["file pattern"]
+//	customProperty("mod_id", prop("dep.mod-id"))
+//}
 
 String prop(String key) {
 	return findProperty(key).toString()
