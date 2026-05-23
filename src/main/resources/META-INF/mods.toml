@@ -26,3 +26,10 @@ mandatory = true
 versionRange = "${minecraft}"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "mossylib"
+mandatory = true
+versionRange = "[${mossylib_version},)"
+ordering = "NONE"
+side = "BOTH"

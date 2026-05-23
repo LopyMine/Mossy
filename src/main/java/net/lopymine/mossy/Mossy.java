@@ -2,7 +2,7 @@ package net.lopymine.mossy;
 
 import net.lopymine.mossylib.logger.MossyLogger;
 import net.minecraft.network.chat.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class Mossy {
 
@@ -11,19 +11,19 @@ public class Mossy {
 
 	public static MossyLogger LOGGER = new MossyLogger(Mossy.MOD_NAME);
 
-	public static ResourceLocation id(String path) {
+	public static Identifier id(String path) {
 		//? if >=1.21 {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 		//?} else {
-		/*return ResourceLocation.tryBuild(MOD_ID, path);
+		/*return Identifier.tryBuild(MOD_ID, path);
 		 *///?}
 	}
 
-	public static ResourceLocation parseId(String path) {
+	public static Identifier parseId(String path) {
 		//? if >=1.21 {
-		return ResourceLocation.parse(path);
+		return Identifier.parse(path);
 		//?} else {
-		/*return new ResourceLocation(path);
+		/*return new Identifier(path);
 		 *///?}
 	}
 
