@@ -1,5 +1,5 @@
 license = "${mod_license}"
-issueTrackerURL = "https://github.com/${github_author}/${mod_id}"
+issueTrackerURL = "https://github.com/${github_author}/${mod_slug}"
 modLoader="javafml"
 loaderVersion="[1,)"
 
@@ -8,7 +8,7 @@ modId = "${mod_id}"
 version = "${mod_version}"
 displayName = "${mod_name}"
 side="${neoforge_trick_side}"
-displayURL = "https://modrinth.com/mod/${mod_id}"
+displayURL = "https://modrinth.com/mod/${mod_slug}"
 logoFile = "icon/icon.png"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
